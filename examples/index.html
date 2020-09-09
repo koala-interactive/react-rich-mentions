@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Playground</title>
+    <style>
+      div[contenteditable] {
+        min-height: 24px;
+        line-height: 24px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 5px 8px;
+        font-family: Arial;
+        white-space: pre-line;
+      }
+      .pending {
+        border-radius:3px;
+        padding:0px 2px;
+        border: 1px dashed #a9bcff;
+      }
+      .final {
+        border-radius:5px;
+        padding:1px 3px;
+        background-color:#e0edf9;
+        display:inline-block;
+        color:#0091ce;
+      }
+      .autocomplete {
+        border-radius: 4px;
+        background: white;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+      }
+      .autocomplete-item {
+        display: block;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        padding: 5px 8px;
+        text-align: left;
+      }
+      .autocomplete-item-selected {
+        background: #eaeaea;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script src="./index.tsx"></script>
+  </body>
+</html>
