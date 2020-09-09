@@ -17,18 +17,12 @@ const list = ['adrien', 'anna', 'guillaume', 'vincent', 'victor'].map(
 
 const configs = [
   {
-    match: /^@([a-zA-Z0-9_-]+)?$/,
+    query: /^@([a-zA-Z0-9_-]+)?$/,
+    match: /<(@\w+)\|([^>]+)>/g,
+    matchDisplay: '$1',
     customizeFragment: (fragment: HTMLSpanElement, final: boolean) => {
       fragment.className = final ? 'final' : 'pending';
       return;
-    },
-    fragmentToHtml: {
-      match: /<(@\w+)\|([^>]+)>/g,
-      extractDisplay: '$1',
-    },
-    htmlToFragment: {
-      match: /<span[^>]+data-rich-mentions="([^"]+)"([^>]+)?>@([^>]+)<\/span>/gi,
-      replace: '$1',
     },
     onMention: (text: string) => {
       const search = text.substr(1); // remove '@'

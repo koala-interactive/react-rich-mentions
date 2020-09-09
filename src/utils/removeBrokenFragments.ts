@@ -17,7 +17,7 @@ export function removeBrokenFragments<T>(
         }
       } else {
         // pending fragment, if not valid, replace the fragment with plain text
-        const isValid = configs.some(cfg => text.match(cfg.match));
+        const isValid = configs.some(cfg => text.match(cfg.query));
         if (!isValid) {
           inputElement.insertBefore(
             document.createTextNode(text),

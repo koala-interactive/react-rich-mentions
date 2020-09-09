@@ -82,7 +82,7 @@ export function RichMentionsProvider<T = object>({
       (!opened || opened.element !== fragment)
     ) {
       const text = fragment.textContent || '';
-      const config = configs.find(cfg => text.match(cfg.match));
+      const config = configs.find(cfg => text.match(cfg.query));
       if (config) {
         openAutocomplete(fragment, text, config);
       }
@@ -101,7 +101,7 @@ export function RichMentionsProvider<T = object>({
 
     if (fragment && !fragment.hasAttribute('data-integrity')) {
       const text = fragment.textContent || '';
-      const config = configs.find(cfg => text.match(cfg.match));
+      const config = configs.find(cfg => text.match(cfg.query));
       if (config) {
         openAutocomplete(fragment, text, config);
       }

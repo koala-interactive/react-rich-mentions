@@ -21,7 +21,7 @@ export function handleFragmentCreation(
     return;
   }
 
-  const config = configs.find(cfg => insertion.match(cfg.match));
+  const config = configs.find(cfg => insertion.match(cfg.query));
   if (!config) {
     return;
   }

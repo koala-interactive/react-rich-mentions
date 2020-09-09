@@ -4,14 +4,14 @@ import { setCursorPosition } from './setCursorPosition';
 export function transformFinalFragment<T>(
   span: HTMLSpanElement,
   ref: TMentionItem['ref'],
-  { fragmentToHtml, customizeFragment }: TMentionConfig<T>
+  config: TMentionConfig<T>
 ): void {
-  if (customizeFragment) {
-    customizeFragment(span, true);
+  if (config.customizeFragment) {
+    config.customizeFragment(span, true);
   }
 
   const content = ref
-    .replace(fragmentToHtml.match, fragmentToHtml.extractDisplay as any)
+    .replace(config.match, config.matchDisplay)
     .replace(/\s/g, '\u00A0');
 
   span.textContent = content;

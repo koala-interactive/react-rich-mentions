@@ -7,16 +7,10 @@ export type TMentionItem<T = object> = T & {
 };
 
 export interface TMentionConfig<T = object> {
+  query: RegExp;
   match: RegExp;
+  matchDisplay: string;
   customizeFragment?: (fragment: HTMLSpanElement, final: boolean) => void;
-  fragmentToHtml: {
-    match: RegExp;
-    extractDisplay: ((substring: string, ...args: any[]) => string) | string;
-  };
-  htmlToFragment: {
-    match: RegExp;
-    replace: ((substring: string, ...args: any[]) => string) | string;
-  };
   onMention: (
     text: string,
     callback?: (results: TMentionItem<T>[]) => void
