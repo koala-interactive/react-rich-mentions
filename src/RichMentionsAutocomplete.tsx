@@ -9,7 +9,7 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
   const {
     opened,
     index,
-    loading,
+    //loading,
     results,
     preSelect,
     selectItem,
@@ -20,12 +20,16 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
   const onHoverItem = (index: number) => () => preSelect(index);
   const divAttributes =
     process.env.NODE_ENV !== 'production' ? { 'data-cy': 'autocomplete' } : {};
+  const itemAttributes =
+    process.env.NODE_ENV !== 'production'
+      ? { 'data-cy': 'autocomplete_item' }
+      : {};
 
   useEffect(() => {
     setPositionFixed(fixed);
   }, [fixed]);
 
-  return opened && (results.length || loading) ? (
+  return opened && results.length ? (
     <div
       {...divAttributes}
       className="autocomplete"
@@ -48,9 +52,7 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
             key={item.ref}
             onClick={onSelectItem(item)}
             onMouseOver={onHoverItem(index)}
-            {...(process.env.NODE_ENV !== 'production'
-              ? { 'data-cy': 'autocomplete_item' }
-              : {})}
+            {...itemAttributes}
           >
             {item.name}
           </button>

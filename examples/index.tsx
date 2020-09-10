@@ -36,16 +36,17 @@ const Root = () => {
   const [result, setResult] = React.useState('');
   const ref = React.useRef<TMentionContextPublicMethods | null>(null);
   const getResult = () => setResult(ref.current?.getTransformedValue() || '');
-  const getContext = (context: TMentionContextPublicMethods) => {
-    ref.current = context;
-  };
+  const clear = () => ref.current?.setValue('');
 
   return (
-    <RichMentionsProvider configs={configs} getContext={getContext}>
+    <RichMentionsProvider configs={configs} getContext={ref}>
       <RichMentionsInput defaultValue={defaultValue} />
       <RichMentionsAutocomplete />
       <button data-cy="parse" type="button" onClick={getResult}>
         Parse
+      </button>
+      <button data-cy="clear" type="button" onClick={clear}>
+        Clear
       </button>
       <pre data-cy="result">{result}</pre>
     </RichMentionsProvider>

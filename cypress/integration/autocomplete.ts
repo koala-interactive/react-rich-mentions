@@ -222,4 +222,11 @@ context('Autocomplete', () => {
       .eq(1)
       .should('have.text', 'anna');
   });
+
+  it('Clear should remove autocomplete', () => {
+    cy.visit('http://localhost:1234/');
+    cy.get('[data-cy=input]').type('Hello world @vi');
+    cy.get('[data-cy=clear]').click();
+    cy.get('[data-cy=autocomplete').should('not.exist', 1);
+  });
 });

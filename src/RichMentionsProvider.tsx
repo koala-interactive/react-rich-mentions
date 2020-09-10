@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { getConfigsInitialValue } from './utils/getConfigsInitialValue';
 import {
   initialContext,
   MentionContext,
@@ -8,19 +7,22 @@ import {
   TMentionContextPublicMethods,
   TMentionConfig,
 } from './RichMentionsContext';
+import { getFragment } from './utils/getFragment';
+import { fixCursorInsertion } from './utils/fixCursorInsertion';
 import { getTransformedValue } from './utils/getTransformedValue';
+import { handleFragmentEscape } from './utils/handleFragmentEscape';
+import { removeBrokenFragments } from './utils/removeBrokenFragments';
 import { handleFragmentCreation } from './utils/handleFragmentCreation';
 import { handleFragmentDeletion } from './utils/handleFragmentDeletion';
-import { getFragment } from './utils/getFragment';
-import { removeBrokenFragments } from './utils/removeBrokenFragments';
-import { fixCursorInsertion } from './utils/fixCursorInsertion';
-import { handleFragmentEscape } from './utils/handleFragmentEscape';
+import { getConfigsInitialValue } from './utils/getConfigsInitialValue';
 import { transformFinalFragment } from './utils/transformFinalFragment';
 
 interface TProps<T = object> {
   children: React.ReactNode | React.ReactNode[];
   configs: TMentionConfig<T>[];
-  getContext?: (ref: TMentionContextPublicMethods) => void;
+  getContext?:
+    | React.MutableRefObject<TMentionContextPublicMethods>
+    | ((ref: TMentionContextPublicMethods) => void);
   getInitialHTML?: (text: string) => string;
 }
 
@@ -167,9 +169,9 @@ export function RichMentionsProvider<T = object>({
   ) => {
     const fixed = ref.current.fixed;
     const rect = node.getBoundingClientRect();
-    const y = fixed ? 0 : pageYOffset;
-    const x = fixed ? 0 : pageXOffset;
-    const bottom = rect.bottom + 300 > innerHeight;
+    const y = fixed ? 0 : window.pageYOffset;
+    const x = fixed ? 0 : window.pageXOffset;
+    const bottom = rect.bottom + 300 > window.innerHeight;
 
     updateState({
       loading: true,
@@ -180,9 +182,9 @@ export function RichMentionsProvider<T = object>({
         bottom,
         element: node,
         x:
-          rect.left + 10 + 200 + x < innerWidth
+          rect.left + 10 + 200 + x < window.innerWidth
             ? rect.left + x + 10
-            : innerWidth - 200,
+            : window.innerWidth - 200,
         y: bottom ? rect.top + y - 3 : rect.bottom + y + 3,
       },
     });
@@ -241,10 +243,20 @@ export function RichMentionsProvider<T = object>({
 
   // Expose reference with publich methods
   useEffect(() => {
-    if (getContext) {
-      getContext({
-        getTransformedValue: () => getTransformedValue(ctx.inputElement),
-      });
+    const context: TMentionContextPublicMethods = {
+      getTransformedValue: () => getTransformedValue(ctx.inputElement),
+      setValue(text) {
+        if (ctx.inputElement) {
+          ctx.inputElement.innerHTML = getInitialHTML(text);
+        }
+        closeAutocomplete();
+      },
+    };
+
+    if (typeof getContext === 'function') {
+      getContext(context);
+    } else if (typeof getContext === 'object') {
+      getContext.current = context;
     }
   }, [getContext, ctx.inputElement]);
 
