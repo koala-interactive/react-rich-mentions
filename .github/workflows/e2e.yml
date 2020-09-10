@@ -1,17 +1,16 @@
-name: CI
-on: [push]
+name: e2e
+
+on:
+  push:
+
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Begin CI...
+      - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Use Node 12
-        uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          fetch-depth: 1
 
       - name: Use cached node_modules
         uses: actions/cache@v2
@@ -22,21 +21,11 @@ jobs:
             nodeModules-
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn --frozen-lockfile
         env:
           CI: true
 
-      - name: Lint
-        run: yarn lint
-        env:
-          CI: true
-
-      - name: Test
-        run: yarn test --ci --coverage --maxWorkers=2
-        env:
-          CI: true
-
-      - name: Build
-        run: yarn build
+      - name: Run e2e tests
+        run: yarn cypress:headless
         env:
           CI: true

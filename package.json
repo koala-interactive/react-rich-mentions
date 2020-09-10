@@ -15,7 +15,8 @@
     "build": "tsdx build",
     "test": "tsdx test --passWithNoTests",
     "lint": "tsdx lint",
-    "prepare": "tsdx build"
+    "prepare": "tsdx build",
+    "cypress:headless": "cd examples && NODE_ENV=development yarn build && cd ../ && cypress run --env baseUrl=./examples/dist/index.html"
   },
   "peerDependencies": {
     "react": ">=16"

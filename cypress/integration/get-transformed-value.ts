@@ -2,7 +2,7 @@
 
 context('Get transformed value', () => {
   before(() => {
-    cy.visit('http://localhost:1234/?abc <@testing|TOTO> def');
+    cy.visit(Cypress.env('baseUrl') + '?abc <@testing|TOTO> def');
   });
 
   it('Should handle handle initial data', () => {
@@ -38,7 +38,7 @@ context('Get transformed value', () => {
   });
 
   it('Should handle line break', () => {
-    cy.visit('http://localhost:1234/?hello%0Aworld');
+    cy.visit(Cypress.env('baseUrl') + '?hello%0Aworld');
     cy.get('[data-cy=input]').type('{enter}.');
     cy.get('[data-cy=input]').then($el =>
       expect($el[0].innerText).to.eq('hello\nworld\n.')

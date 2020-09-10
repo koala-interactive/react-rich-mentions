@@ -2,7 +2,7 @@
 
 context('Pending fragment', () => {
   before(() => {
-    cy.visit('http://localhost:1234/');
+    cy.visit(Cypress.env('baseUrl'));
   });
 
   beforeEach(() => {

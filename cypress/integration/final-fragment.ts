@@ -2,7 +2,7 @@
 
 context('Final fragment', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:1234/?abc <@testing|TOTO> def');
+    cy.visit(Cypress.env('baseUrl') + '?abc <@testing|TOTO> def');
     cy.get('[data-cy=final]').should('have.text', '@testing');
     cy.get('[data-cy=input]').textEqual('abc @testing def');
   });

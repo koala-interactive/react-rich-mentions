@@ -1,3 +1,7 @@
 {
-  "defaultCommandTimeout": 200
+  "defaultCommandTimeout": 200,
+  "video": false,
+  "env": {
+    "baseUrl": "http://localhost:1234/"
+  }
 }
