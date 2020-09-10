@@ -48,7 +48,7 @@ context('Get transformed value', () => {
   });
 
   it('Should be able to clear', () => {
-    cy.visit('http://localhost:1234/?hello%0Aworld');
+    cy.visit(Cypress.env('baseUrl') + '?hello%0Aworld');
     cy.get('[data-cy=input]').then($el =>
       expect($el[0].innerText).to.eq('hello\nworld')
     );
