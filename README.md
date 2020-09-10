@@ -1,7 +1,6 @@
 # react-rich-mentions
 
 ![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/koala-interactive/react-rich-mentions/react)
-![npm type definitions](https://img.shields.io/npm/types/react-rich-mentions)
 [![Cypress.io](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)](https://www.cypress.io/)
 ![lint](https://github.com/koala-interactive/react-rich-mentions/workflows/lint/badge.svg?branch=master)
 ![e2e](https://github.com/koala-interactive/react-rich-mentions/workflows/e2e/badge.svg?branch=master)
