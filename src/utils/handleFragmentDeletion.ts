@@ -1,4 +1,4 @@
-import { nodeToHtmlElement } from './nodeToHTMLElement';
+import { nodeToHtmlElement } from './nodeToHtmlElement';
 
 const removeIfFinalFragment = (node: Node, container: HTMLDivElement): void => {
   const element = nodeToHtmlElement(node);

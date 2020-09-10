@@ -1,4 +1,4 @@
-import { nodeToHtmlElement } from './nodeToHTMLElement';
+import { nodeToHtmlElement } from './nodeToHtmlElement';
 import { escapeFragmentWithValue } from './escapeFragmentWithValue';
 
 export function fixCursorInsertion(
