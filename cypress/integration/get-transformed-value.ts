@@ -46,4 +46,28 @@ context('Get transformed value', () => {
     cy.get('[data-cy=parse]').click();
     cy.get('[data-cy=result').should('have.text', 'hello\nworld\n.');
   });
+
+  it('Should be able to clear', () => {
+    cy.visit('http://localhost:1234/?hello%0Aworld');
+    cy.get('[data-cy=input]').then($el =>
+      expect($el[0].innerText).to.eq('hello\nworld')
+    );
+    cy.get('[data-cy=parse]').click();
+    cy.get('[data-cy=result').should('have.text', 'hello\nworld');
+
+    cy.get('[data-cy=clear]').click();
+    cy.get('[data-cy=parse]').click();
+    cy.get('[data-cy=input]').should('have.text', '');
+    cy.get('[data-cy=result').should('have.text', '');
+
+    cy.get('[data-cy=input]').type('coucou');
+    cy.get('[data-cy=parse]').click();
+    cy.get('[data-cy=input]').should('have.text', 'coucou');
+    cy.get('[data-cy=result').should('have.text', 'coucou');
+
+    cy.get('[data-cy=clear]').click();
+    cy.get('[data-cy=parse]').click();
+    cy.get('[data-cy=input]').should('have.text', '');
+    cy.get('[data-cy=result').should('have.text', '');
+  });
 });

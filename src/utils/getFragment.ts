@@ -1,4 +1,4 @@
-import { nodeToHtmlElement } from './nodeToHTMLElement';
+import { nodeToHtmlElement } from './nodeToHtmlElement';
 
 export function getFragment(node: Node): HTMLElement | null {
   const element = nodeToHtmlElement(node);

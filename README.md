@@ -1,156 +1,133 @@
-# TSDX React User Guide
+# react-rich-mentions
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/koala-interactive/react-rich-mentions/react)
+![npm type definitions](https://img.shields.io/npm/types/react-rich-mentions)
+[![Cypress.io](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)](https://www.cypress.io/)
+![lint](https://github.com/koala-interactive/react-rich-mentions/workflows/lint/badge.svg?branch=master)
+![e2e](https://github.com/koala-interactive/react-rich-mentions/workflows/e2e/badge.svg?branch=master)
 
-> This TSDX setup is meant for developing React component libraries (not apps!) that can be published to NPM. If you’re looking to build a React-based app, you should use `create-react-app`, `razzle`, `nextjs`, `gatsby`, or `react-static`.
+React library to handle **@mentions**, **#channels**, **:smileys:** and whatever with styles.
 
-> If you’re new to TypeScript and React, checkout [this handy cheatsheet](https://github.com/sw-yx/react-typescript-cheatsheet/)
+## Getting started
 
-## Commands
+Install the _react-rich-mentions_ package via npm:
 
-TSDX scaffolds your new library inside `/src`, and also sets up a [Parcel-based](https://parceljs.org) playground for it inside `/example`.
-
-The recommended workflow is to run TSDX in one terminal:
-
-```bash
-npm start # or yarn start
+```
+npm install react-rich-mentions --save
 ```
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+Or yarn:
 
-Then run the example inside another:
-
-```bash
-cd example
-npm i # or yarn to install dependencies
-npm start # or yarn start
+```
+yarn add react-rich-mentions
 ```
 
-The default example imports and live reloads whatever is in `/dist`, so if you are seeing an out of date component, make sure TSDX is running in watch mode like we recommend above. **No symlinking required**, we use [Parcel's aliasing](https://parceljs.org/module_resolution.html#aliases).
+The package exports React components for rendering the mentions autocomplete and contenteditable :
 
-To do a one-off build, use `npm run build` or `yarn build`.
-
-To run tests, use `npm test` or `yarn test`.
-
-## Configuration
-
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
-
-### Jest
-
-Jest tests are set up to run with `npm test` or `yarn test`.
-
-#### Setup Files
-
-This is the folder structure we set up for you:
-
-```txt
-/example
-  index.html
-  index.tsx       # test your component here in a demo app
-  package.json
-  tsconfig.json
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
+```ts
+import {
+  RichMentionsInput,
+  RichMentionsAutocomplete,
+  RichMentionsContext,
+  RichMentionsProvider,
+} from 'react-rich-mentions';
 ```
 
-#### React Testing Library
+- `RichMentionsProvider` - Feed it with your components and the mention configs
+- `RichMentionsInput` - The div[contenteditable] used as TextField
+- `RichMentionsAutocomplete` - The default Autocomplete component given with the library (can be overwritten)
+- `RichMentionsContext` - Use it to create your own Autocomplete or custom controller.
 
-We do not set up `react-testing-library` for you yet, we welcome contributions and documentation on this.
+Example:
 
-### Rollup
+```tsx
+const configs = [
+  {
+    // The fragment to transform to readable element.
+    // For example, slack is using `<[name]|[id]>` -> `<vince|U82737823>`
+    match: /<(@\w+)\|([^>]+)>/g,
 
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
+    // Use it in combinaison with .match to choose what to display to your user instead of the fragment
+    // Given the regex `/<(@\w+)\|([^>]+)>/g` and the fragment `<vince|U82737823>`
+    // - $& -> <vince|U82737823>
+    // - $1 -> vince
+    // - $2 -> U82737823
+    matchDisplay: '$1',
 
-### TypeScript
+    // The query that will start the autocomplete
+    // In this case it will match:
+    // - @
+    // - @test
+    // _ @test_
+    // Can be changed to catch spaces or some special characters.
+    query: /^@([a-zA-Z0-9_-]+)?$/,
 
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
+    //
+    finalFragmentEditable: false,
 
-## Continuous Integration
+    // The function that will search for autocomplete result.
+    // The argument is the searchable text (for example '@test').
+    // It can return a promise. The result have to contains for each item:
+    // - a prop "ref" -> let say `<@vince|U23872783>`
+    // - a prop "name" -> the display name
+    async onMention(text) {
+      const query = text.substr(1); // remove the '@'
+      const results = await callYourAPI(query);
 
-### GitHub Actions
+      return results.map(user => ({
+        ref: `<@${user.nickname}|${user.id}>`,
+        name: user.nickname,
+      }));
+    },
 
-A simple action is included that runs these steps on all pushes:
+    // Called to customize visual elements inside input.
+    // Can be used to add classes, aria, ...
+    // `final` is a boolean to know if the fragment is resolved still
+    // waiting for user to select an entry in autocomplete
+    customizeFragment(span: HTMLSpanElement, final: boolean) {
+      span.className = final ? 'final' : 'pending';
+    },
+  },
+];
 
-- Installs deps w/ cache
-- Lints, tests, and builds
+const MyComponent = () => {
+  const ref = useRef();
+  const onClear = () => ref.current.setValue('');
+  const onSubmit = () => {
+    console.log(ref.current.getTransformedValue());
+  };
 
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
-
-```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
-
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
-}
+  return (
+    <RichMentionsProvider configs={configs} getContext={ref}>
+      <RichMentionsInput defaultValue="The default Text" />
+      <RichMentionsAutocomplete fixed={false} />
+      <button type="button" onClick={onSubmit}>
+        Send
+      </button>
+      <button type="reset" onClick={onClear}>
+        Clear
+      </button>
+    </RichMentionsProvider>
+  );
+};
 ```
 
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
+### RichMentionsInput props
 
-## Module Formats
+| Prop name    | Type   | Default value | Description                                        |
+| ------------ | ------ | ------------- | -------------------------------------------------- |
+| defaultValue | string | `''`          | The default value of the input (cannot be updated) |
 
-CJS, ESModules, and UMD module formats are supported.
+### RichMentionsAutocomplete props
 
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
+| Prop name | Type                 | Default value | Description                                       |
+| --------- | -------------------- | ------------- | ------------------------------------------------- |
+| fixed     | boolean _(optional)_ | `false`       | Is the autocomplete on a fixed position element ? |
 
-## Deploying the Example Playground
+### RichMentionsProvider props
 
-The Playground is just a simple [Parcel](https://parceljs.org) app, you can deploy it anywhere you would normally deploy that. Here are some guidelines for **manually** deploying with the Netlify CLI (`npm i -g netlify-cli`):
-
-```bash
-cd example # if not already in the example folder
-npm run build # builds to dist
-netlify deploy # deploy the dist folder
-```
-
-Alternatively, if you already have a git repo connected, you can set up continuous deployment with Netlify:
-
-```bash
-netlify init
-# build command: yarn build && cd example && yarn && yarn build
-# directory to deploy: example/dist
-# pick yes for netlify.toml
-```
-
-## Named Exports
-
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
-
-## Including Styles
-
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
-
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
-
-## Publishing to NPM
-
-We recommend using [np](https://github.com/sindresorhus/np).
-
-## Usage with Lerna
-
-When creating a new package with TSDX within a project set up with Lerna, you might encounter a `Cannot resolve dependency` error when trying to run the `example` project. To fix that you will need to make changes to the `package.json` file _inside the `example` directory_.
-
-The problem is that due to the nature of how dependencies are installed in Lerna projects, the aliases in the example project's `package.json` might not point to the right place, as those dependencies might have been installed in the root of your Lerna project.
-
-Change the `alias` to point to where those packages are actually installed. This depends on the directory structure of your Lerna project, so the actual path might be different from the diff below.
-
-```diff
-   "alias": {
--    "react": "../node_modules/react",
--    "react-dom": "../node_modules/react-dom"
-+    "react": "../../../node_modules/react",
-+    "react-dom": "../../../node_modules/react-dom"
-   },
-```
-
-An alternative to fixing this problem would be to remove aliases altogether and define the dependencies referenced as aliases as dev dependencies instead. [However, that might cause other problems.](https://github.com/palmerhq/tsdx/issues/64)
+| Prop name      | Type                  | Default value | Description                                                           |
+| -------------- | --------------------- | ------------- | --------------------------------------------------------------------- |
+| configs        | TMentionConfig[]      | `undefined`   | List of configs to fetch mentions                                     |
+| getContext     | function _(optional)_ | `undefined`   | Get rich mention context (can be used with a useRef)                  |
+| getInitialHTML | function _(optional)_ | `undefined`   | Can be used to overwrite the function used to preprocess `value` data |
