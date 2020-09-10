@@ -12,14 +12,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Use cached node_modules
-        uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: nodeModules-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            nodeModules-
-
       - name: Install dependencies
         run: yarn --frozen-lockfile
         env:
