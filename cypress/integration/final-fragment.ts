@@ -54,4 +54,15 @@ context('Final fragment', () => {
     cy.get('[data-cy=final]').textEqual('@testing');
     cy.get('[data-cy=input]').textEqual('abc @testing_ def');
   });
+
+  it('Reseting fragment should not restore styles (chrome bug)', () => {
+    cy.get('[data-cy=input]').clear();
+    cy.get('[data-cy=input]').type('@vince{enter}');
+    cy.get('[data-cy=input]').clear();
+    cy.get('[data-cy=input]').type('abc');
+
+    cy.get('[data-cy=input]').then($el => {
+      expect($el.html()).to.eq('abc');
+    });
+  });
 });

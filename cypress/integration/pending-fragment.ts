@@ -86,4 +86,23 @@ context('Pending fragment', () => {
     cy.get('[data-cy=pending]').should('not.exist', 1);
     cy.get('[data-cy=input').textEqual('abc _test ');
   });
+
+  it('Deleting a selection should work', () => {
+    cy.get('[data-cy=input]')
+      .type('abcdef')
+      .then($el => {
+        const element = $el[0];
+        const document = element.ownerDocument;
+        const selection = document.getSelection();
+        const range = document.createRange();
+
+        range.setStart(element.firstChild, 0);
+        range.setEnd(element.firstChild, 5);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      });
+
+    cy.get('[data-cy=input]').type('@');
+    cy.get('[data-cy=input]').textEqual('@ f');
+  });
 });

@@ -1,5 +1,5 @@
 export function setCursorPosition(
-  element: HTMLElement | Text,
+  element: HTMLElement | Node | Text,
   position: number
 ): void {
   const selection = document.getSelection();
