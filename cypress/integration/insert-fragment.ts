@@ -17,7 +17,7 @@ context('Insert fragment', () => {
     cy.get('[data-cy=final]').should('have.text', '@vincent');
 
     cy.get('[data-cy=parse]').click();
-    cy.get('[data-cy=result').should('have.text', 'hello <@vincent|u3>');
+    cy.get('[data-cy=result]').should('have.text', 'hello <@vincent|u3>');
   });
 
   it('Insert when no content', () => {
@@ -27,7 +27,7 @@ context('Insert fragment', () => {
     cy.get('[data-cy=final]').should('have.text', '@vincent');
 
     cy.get('[data-cy=parse]').click();
-    cy.get('[data-cy=result').should('have.text', '<@vincent|u3>');
+    cy.get('[data-cy=result]').should('have.text', '<@vincent|u3>');
   });
 
   it('Insert at current cursor position', () => {

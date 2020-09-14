@@ -15,14 +15,14 @@ context('Pending fragment', () => {
 
     cy.get('[data-cy=input]').type('@test a');
     cy.get('[data-cy=pending]').textEqual('@test');
-    cy.get('[data-cy=input').textEqual('abc @test a');
+    cy.get('[data-cy=input]').textEqual('abc @test a');
   });
 
   it('Should handle fragment creation at start position', () => {
     cy.get('[data-cy=pending]').should('not.exist', 1);
     cy.get('[data-cy=input]').type('@test a');
     cy.get('[data-cy=pending]').textEqual('@test');
-    cy.get('[data-cy=input').textEqual('@test a');
+    cy.get('[data-cy=input]').textEqual('@test a');
   });
 
   it('Should be able to edit fragment', () => {
@@ -49,9 +49,9 @@ context('Pending fragment', () => {
     cy.get('[data-cy=pending]').textEqual('@test');
     cy.get('[data-cy=input]').type('{backspace}');
     cy.get('[data-cy=pending]').should('not.exist', 1);
-    cy.get('[data-cy=input').textEqual('abc test ');
+    cy.get('[data-cy=input]').textEqual('abc test ');
     cy.get('[data-cy=input]').type('_');
-    cy.get('[data-cy=input').textEqual('abc _test ');
+    cy.get('[data-cy=input]').textEqual('abc _test ');
   });
 
   it('Should delete fragment on @ del deletion', () => {
@@ -61,9 +61,9 @@ context('Pending fragment', () => {
     cy.get('[data-cy=pending]').textEqual('@test');
     cy.get('[data-cy=input]').type('{del}');
     cy.get('[data-cy=pending]').should('not.exist', 1);
-    cy.get('[data-cy=input').textEqual('abc test ');
+    cy.get('[data-cy=input]').textEqual('abc test ');
     cy.get('[data-cy=input]').type('_');
-    cy.get('[data-cy=input').textEqual('abc _test ');
+    cy.get('[data-cy=input]').textEqual('abc _test ');
   });
 
   it('Should delete fragment on char deletion', () => {
@@ -84,7 +84,7 @@ context('Pending fragment', () => {
 
     cy.get('[data-cy=input]').type('_');
     cy.get('[data-cy=pending]').should('not.exist', 1);
-    cy.get('[data-cy=input').textEqual('abc _test ');
+    cy.get('[data-cy=input]').textEqual('abc _test ');
   });
 
   it('Deleting a selection should work', () => {

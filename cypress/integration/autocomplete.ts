@@ -227,6 +227,6 @@ context('Autocomplete', () => {
     cy.visit(Cypress.env('baseUrl'));
     cy.get('[data-cy=input]').type('Hello world @vi');
     cy.get('[data-cy=clear]').click();
-    cy.get('[data-cy=autocomplete').should('not.exist', 1);
+    cy.get('[data-cy=autocomplete]').should('not.exist', 1);
   });
 });
