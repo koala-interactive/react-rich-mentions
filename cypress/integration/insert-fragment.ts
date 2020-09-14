@@ -56,24 +56,66 @@ context('Insert fragment', () => {
     cy.get('[data-cy=final]').should('have.text', '@vincent');
   });
 
-  it('Should replace selected text', () => {
-    cy.get('[data-cy=input]')
-      .type('abcdef')
-      .then($el => {
-        const element = $el[0];
-        const document = element.ownerDocument;
-        const selection = document.getSelection();
-        const range = document.createRange();
+  describe('Text selection', () => {
+    it('Should replace selected text', () => {
+      cy.get('[data-cy=input]')
+        .type('abcdef')
+        .then($el => {
+          const element = $el[0];
+          const document = element.ownerDocument;
+          const selection = document.getSelection();
+          const range = document.createRange();
 
-        range.setStart(element.firstChild, 1);
-        range.setEnd(element.firstChild, 5);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      });
+          range.setStart(element.firstChild, 1);
+          range.setEnd(element.firstChild, 5);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        });
 
-    cy.get('[data-cy=insert]').click();
-    cy.get('[data-cy=input]').textEqual('a @vincent f');
-    cy.get('[data-cy=final]').should('have.text', '@vincent');
+      cy.get('[data-cy=insert]').click();
+      cy.get('[data-cy=input]').textEqual('a @vincent f');
+      cy.get('[data-cy=final]').should('have.text', '@vincent');
+    });
+
+    it('Should replace selected text and pending fragment', () => {
+      cy.get('[data-cy=input]')
+        .type('abcdef @vict')
+        .then($el => {
+          const element = $el[0];
+          const document = element.ownerDocument;
+          const selection = document.getSelection();
+          const range = document.createRange();
+
+          range.setStart(element.firstChild, 1);
+          range.setEnd(element.childNodes[1].firstChild, 2);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        });
+
+      cy.get('[data-cy=insert]').click();
+      cy.get('[data-cy=input]').textEqual('a @vincent ict');
+      cy.get('[data-cy=final]').should('have.text', '@vincent');
+    });
+
+    it('Should replace selected text and final fragment', () => {
+      cy.get('[data-cy=input]')
+        .type('abcdef @vic{enter}{leftarrow}{leftarrow}')
+        .then($el => {
+          const element = $el[0];
+          const document = element.ownerDocument;
+          const selection = document.getSelection();
+          const range = document.createRange();
+
+          range.setStart(element.firstChild, 1);
+          range.setEnd(element.childNodes[1].firstChild, 4);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        });
+
+      cy.get('[data-cy=insert]').click();
+      cy.get('[data-cy=input]').textEqual('a @vincent  ');
+      cy.get('[data-cy=final]').should('have.text', '@vincent');
+    });
   });
 
   describe('pending fragment', () => {

@@ -132,8 +132,8 @@ const MyComponent = () => {
 
 The context returned by `getContext}` props.
 
-| Prop name           | Type | Default value | Description |
-| ------------------- | ---- | ------------- | ----------- |
-| getTransformedValue | xxx  | `xxx`         | xxx         |
-| setValue            | xxx  | `xxx`         | xxx         |
-| insertFragment      | xxx  | `xxx`         | xxx         |
+| Prop name           | Type     | Example                                  | Description                                                         |
+| ------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| getTransformedValue | function | `const text = ctx.getTransformedValue()` | Get the input value with fragment transformed to valid code         |
+| setValue            | function | `ctx.setValue('Hello <@world|U15151>')`  | Change the input value, will transform the code with valid fragment |
+| insertFragment      | function | `ctx.insertFragment('<@world|U45454>')`  | Add a fragment at the current cursor position                       |

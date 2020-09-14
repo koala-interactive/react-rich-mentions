@@ -246,12 +246,16 @@ export function RichMentionsProvider<T = object>({
   useEffect(() => {
     const context: TMentionContextPublicMethods = {
       getTransformedValue: () => getTransformedValue(ctx.inputElement),
-      insertFragment: ref =>
+      insertFragment: ref => {
         insertFragment(
           ref,
           configs.find(cfg => ref.match(cfg.match)),
           ctx.inputElement
-        ),
+        );
+        if (ctx.inputElement) {
+          removeBrokenFragments<T>(ctx.inputElement, configs);
+        }
+      },
       setValue(text) {
         if (ctx.inputElement) {
           ctx.inputElement.innerHTML = getInitialHTML(text);
