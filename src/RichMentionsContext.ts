@@ -20,6 +20,7 @@ export interface TMentionConfig<T = object> {
 export interface TMentionContextPublicMethods {
   getTransformedValue: () => string;
   setValue: (text: string) => void;
+  insertFragment: (ref: string) => void;
 }
 
 export interface TMentionContext extends TMentionContextPublicMethods {
@@ -55,6 +56,7 @@ export interface TMentionContext extends TMentionContextPublicMethods {
 
 export const initialContext: TMentionContext = {
   getTransformedValue: () => '',
+  insertFragment: noop,
   setValue: noop,
   activeSearch: '',
   inputElement: null,

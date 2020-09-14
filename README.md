@@ -61,9 +61,6 @@ const configs = [
     // Can be changed to catch spaces or some special characters.
     query: /^@([a-zA-Z0-9_-]+)?$/,
 
-    //
-    finalFragmentEditable: false,
-
     // The function that will search for autocomplete result.
     // The argument is the searchable text (for example '@test').
     // It can return a promise. The result have to contains for each item:
@@ -130,3 +127,13 @@ const MyComponent = () => {
 | configs        | TMentionConfig[]      | `undefined`   | List of configs to fetch mentions                                     |
 | getContext     | function _(optional)_ | `undefined`   | Get rich mention context (can be used with a useRef)                  |
 | getInitialHTML | function _(optional)_ | `undefined`   | Can be used to overwrite the function used to preprocess `value` data |
+
+### RichMentionsPublicContext props
+
+The context returned by `getContext` props.
+
+| Prop name           | Type     | Example                                  | Description                                                         |
+| ------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| getTransformedValue | function | `const text = ctx.getTransformedValue()` | Get the input value with fragment transformed to valid code         |
+| setValue            | function | `ctx.setValue('Hello <@world\|U15151>')` | Change the input value, will transform the code with valid fragment |
+| insertFragment      | function | `ctx.insertFragment('<@world\|U45454>')` | Add a fragment at the current cursor position                       |

@@ -37,6 +37,7 @@ const Root = () => {
   const ref = React.useRef<TMentionContextPublicMethods | null>(null);
   const getResult = () => setResult(ref.current?.getTransformedValue() || '');
   const clear = () => ref.current?.setValue('');
+  const insert = () => ref.current?.insertFragment('<@vincent|u3>');
 
   return (
     <RichMentionsProvider configs={configs} getContext={ref}>
@@ -47,6 +48,9 @@ const Root = () => {
       </button>
       <button data-cy="clear" type="button" onClick={clear}>
         Clear
+      </button>
+      <button data-cy="insert" type="button" onClick={insert}>
+        Insert name
       </button>
       <pre data-cy="result">{result}</pre>
     </RichMentionsProvider>

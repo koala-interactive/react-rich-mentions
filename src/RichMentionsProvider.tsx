@@ -8,6 +8,7 @@ import {
   TMentionConfig,
 } from './RichMentionsContext';
 import { getFragment } from './utils/getFragment';
+import { insertFragment } from './utils/insertFragment';
 import { fixCursorInsertion } from './utils/fixCursorInsertion';
 import { getTransformedValue } from './utils/getTransformedValue';
 import { handleFragmentEscape } from './utils/handleFragmentEscape';
@@ -245,6 +246,7 @@ export function RichMentionsProvider<T = object>({
   useEffect(() => {
     const context: TMentionContextPublicMethods = {
       getTransformedValue: () => getTransformedValue(ctx.inputElement),
+      insertFragment: ref => insertFragment<T>(ref, configs, ctx.inputElement),
       setValue(text) {
         if (ctx.inputElement) {
           ctx.inputElement.innerHTML = getInitialHTML(text);

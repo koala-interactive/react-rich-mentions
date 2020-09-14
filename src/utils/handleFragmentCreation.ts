@@ -1,19 +1,22 @@
 import { TMentionConfig, TMentionContext } from '../RichMentionsContext';
 import { setCursorPosition } from './setCursorPosition';
+import { deleteSelection } from './deleteSelection';
 
 export function handleFragmentCreation(
   event: React.FormEvent<HTMLDivElement>,
-  { anchorNode, anchorOffset }: Selection,
+  selection: Selection,
   configs: TMentionConfig<any>[],
   ctx: TMentionContext
 ): void {
+  const { anchorNode, anchorOffset } = selection;
+
   if (event.defaultPrevented || !anchorNode) {
     return;
   }
 
   // @ts-ignore Find a property type instead of React.FormEvent<HTMLDivElement> ?
   const insertion: string = event.data;
-  const text = anchorNode.textContent || '';
+  let text = anchorNode.textContent || '';
 
   const prevChar = text.charAt(anchorOffset - 1);
   // Start fragment
@@ -25,6 +28,12 @@ export function handleFragmentCreation(
   if (!config) {
     return;
   }
+
+  // If there is text selection, delete it.
+  // We need to do it manually because of the preventDefault() :'(
+  // Update 'text' variable as the content could be updated
+  deleteSelection(selection);
+  text = anchorNode.textContent || '';
 
   const fragment = document.createElement('span');
 
@@ -40,7 +49,11 @@ export function handleFragmentCreation(
   }
 
   fragment.textContent = insertion;
-  const after = document.createTextNode(text.substr(anchorOffset));
+  const secondPart = text.substr(anchorOffset);
+  const after = document.createTextNode(
+    /^\s/.test(secondPart) ? secondPart : ' ' + secondPart
+  );
+
   const isContainer = event.currentTarget === anchorNode;
   const parent = isContainer ? anchorNode : anchorNode.parentElement;
   anchorNode.textContent = text.substr(0, anchorOffset);
