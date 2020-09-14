@@ -3,6 +3,7 @@ import { deleteSelection } from './deleteSelection';
 import { setCursorPosition } from './setCursorPosition';
 import { transformFinalFragment } from './transformFinalFragment';
 import { TMentionConfig } from '../RichMentionsContext';
+import { removeBrokenFragments } from './removeBrokenFragments';
 
 const isSpace = (char: string) => /(\u00A0|\s)/.test(char);
 
@@ -39,11 +40,13 @@ const needSpaceAfter = (text: string, offset: number, node: Node): boolean => {
   return !nextText.length || !isSpace(nextText.charAt(0));
 };
 
-export function insertFragment(
+export function insertFragment<T>(
   ref: string,
-  config: TMentionConfig<any> | undefined,
+  configs: TMentionConfig<T>[],
   inputElement: HTMLDivElement | null
 ) {
+  const config = configs.find(cfg => ref.match(cfg.match));
+
   // inputElement was removed from DOM for some reasons
   if (!inputElement || !config) {
     return;
@@ -177,4 +180,11 @@ export function insertFragment(
   if (span.nextSibling) {
     setCursorPosition(span.nextSibling, 1);
   }
+
+  // If the user is selecting text and some parts of fragment, we need to be sure to delete it correctly
+  // Ex where "[" and "]" are the start and ending of text selection:
+  // input: "he[llo <span>@vin]ce</span>"
+  // output: "he @insertedfragment <span>ce</span>"
+  // In this case, the fragment "ce" need to be deleted.
+  removeBrokenFragments<T>(inputElement, configs);
 }
