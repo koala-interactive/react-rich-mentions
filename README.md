@@ -59,7 +59,7 @@ const configs = [
     // - @test
     // _ @test_
     // Can be changed to catch spaces or some special characters.
-    query: /^@([a-zA-Z0-9_-]+)?$/,
+    query: /@([a-zA-Z0-9_-]+)?/,
 
     // The function that will search for autocomplete result.
     // The argument is the searchable text (for example '@test').

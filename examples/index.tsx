@@ -17,7 +17,7 @@ const list = ['adrien', 'anna', 'guillaume', 'vincent', 'victor'].map(
 
 const configs = [
   {
-    query: /^@([a-zA-Z0-9_-]+)?$/,
+    query: /@([a-zA-Z0-9_-]+)?/,
     match: /<(@\w+)\|([^>]+)>/g,
     matchDisplay: '$1',
     customizeFragment: (fragment: HTMLSpanElement, final: boolean) => {
