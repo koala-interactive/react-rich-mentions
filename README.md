@@ -1,6 +1,6 @@
 # react-rich-mentions
 
-![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/koala-interactive/react-rich-mentions/react)
+![GitHub package.json dependency version (prod)](https://img.shields.io/github/package-json/dependency-version/koala-interactive/react-rich-mentions/dev/react)
 [![Cypress.io](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)](https://www.cypress.io/)
 ![lint](https://github.com/koala-interactive/react-rich-mentions/workflows/lint/badge.svg?branch=master)
 ![e2e](https://github.com/koala-interactive/react-rich-mentions/workflows/e2e/badge.svg?branch=master)
@@ -59,7 +59,7 @@ const configs = [
     // - @test
     // _ @test_
     // Can be changed to catch spaces or some special characters.
-    query: /^@([a-zA-Z0-9_-]+)?$/,
+    query: /@([a-zA-Z0-9_-]+)?/,
 
     // The function that will search for autocomplete result.
     // The argument is the searchable text (for example '@test').

@@ -17,7 +17,10 @@ export function handleFragmentEscape(
     // @ts-ignore
     const insertion: string = event.data;
     const newText = element.textContent + insertion;
-    const isValid = configs.some(cfg => newText.match(cfg.query));
+    const isValid = configs.some(cfg => {
+      const matches = newText.match(cfg.query);
+      return matches && matches[0] === matches.input;
+    });
 
     if (!isValid) {
       event.preventDefault();

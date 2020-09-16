@@ -17,6 +17,7 @@ import { handleFragmentCreation } from './utils/handleFragmentCreation';
 import { handleFragmentDeletion } from './utils/handleFragmentDeletion';
 import { getConfigsInitialValue } from './utils/getConfigsInitialValue';
 import { transformFinalFragment } from './utils/transformFinalFragment';
+import { deleteSelection } from './utils/deleteSelection';
 
 interface TProps<T = object> {
   children: React.ReactNode | React.ReactNode[];
@@ -58,15 +59,27 @@ export function RichMentionsProvider<T = object>({
   };
 
   const onBeforeChanges: TMentionContext['onBeforeChanges'] = event => {
-    const selection = document.getSelection();
+    let selection = document.getSelection();
+
     if (!selection || !selection.anchorNode) {
       return;
+    }
+
+    // If there is text selection, delete it.
+    // We need to do it manually because of the preventDefault() :'(
+    // Update 'text' variable as the content could be updated
+    if (deleteSelection(selection)) {
+      selection = document.getSelection();
+      if (!selection || !selection.anchorNode) {
+        return;
+      }
     }
 
     fixCursorInsertion(event, selection);
     handleFragmentDeletion(event, selection);
     handleFragmentEscape(event, selection, configs);
     handleFragmentCreation(event, selection, configs, ref.current);
+    removeBrokenFragments<T>(event.currentTarget, configs);
   };
 
   const onSelectionChange = () => {

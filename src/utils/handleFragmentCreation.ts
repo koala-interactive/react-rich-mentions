@@ -1,6 +1,6 @@
 import { TMentionConfig, TMentionContext } from '../RichMentionsContext';
 import { setCursorPosition } from './setCursorPosition';
-import { deleteSelection } from './deleteSelection';
+import { getFragment } from './getFragment';
 
 export function handleFragmentCreation(
   event: React.FormEvent<HTMLDivElement>,
@@ -10,32 +10,48 @@ export function handleFragmentCreation(
 ): void {
   const { anchorNode, anchorOffset } = selection;
 
-  if (event.defaultPrevented || !anchorNode) {
+  if (event.defaultPrevented || !anchorNode || getFragment(anchorNode)) {
     return;
   }
 
   // @ts-ignore Find a property type instead of React.FormEvent<HTMLDivElement> ?
   const insertion: string = event.data;
-  let text = anchorNode.textContent || '';
+  const fragmentText = anchorNode.textContent || '';
 
-  const prevChar = text.charAt(anchorOffset - 1);
-  // Start fragment
-  if (anchorOffset && prevChar && !/\W/.test(prevChar)) {
-    return;
-  }
+  // Build new text fragment with insertion
+  const text =
+    fragmentText.substr(0, anchorOffset) +
+    insertion +
+    fragmentText.substr(anchorOffset);
 
-  const config = configs.find(cfg => insertion.match(cfg.query));
+  // No match
+  const config = configs.find(cfg => text.match(cfg.query));
   if (!config) {
     return;
   }
 
-  // If there is text selection, delete it.
-  // We need to do it manually because of the preventDefault() :'(
-  // Update 'text' variable as the content could be updated
-  deleteSelection(selection);
-  text = anchorNode.textContent || '';
+  const matches = text.match(config.query) as RegExpMatchArray;
+  const index = matches.index || 0;
+  const textBeforeQuery = text.substr(0, index);
+
+  // Do nothing if there is a valid character before.
+  // Do nothing if the range overflow the fragment position
+  if (
+    (textBeforeQuery.length && !/\W$/.test(textBeforeQuery)) ||
+    anchorOffset < index ||
+    anchorOffset >= index + matches[0].length
+  ) {
+    return;
+  }
+
+  anchorNode.textContent = textBeforeQuery;
 
   const fragment = document.createElement('span');
+  const textQuery = matches[0].substr(
+    0,
+    anchorOffset - index + insertion.length
+  );
+  const afterInsertion = text.substr(index + textQuery.length);
 
   if (config.customizeFragment) {
     config.customizeFragment(fragment, false);
@@ -48,15 +64,13 @@ export function handleFragmentCreation(
     fragment.setAttribute('data-cy', 'pending');
   }
 
-  fragment.textContent = insertion;
-  const secondPart = text.substr(anchorOffset);
+  fragment.textContent = textQuery;
   const after = document.createTextNode(
-    /^\s/.test(secondPart) ? secondPart : ' ' + secondPart
+    /^\s/.test(afterInsertion) ? afterInsertion : ' ' + afterInsertion
   );
 
   const isContainer = event.currentTarget === anchorNode;
   const parent = isContainer ? anchorNode : anchorNode.parentElement;
-  anchorNode.textContent = text.substr(0, anchorOffset);
 
   if (parent) {
     if (isContainer) {
@@ -68,7 +82,11 @@ export function handleFragmentCreation(
     }
   }
 
-  setCursorPosition(fragment, 1);
   event.preventDefault();
-  ctx.openAutocomplete(fragment, insertion, config);
+  setCursorPosition(
+    fragment.childNodes[0],
+    anchorOffset - textBeforeQuery.length + 1
+  );
+
+  ctx.openAutocomplete(fragment, textQuery, config);
 }
