@@ -11,13 +11,13 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
     index,
     //loading,
     results,
-    preSelect,
+    setActiveItemIndex,
     selectItem,
     setPositionFixed,
   } = useContext(MentionContext);
 
   const onSelectItem = (item: TMentionItem<T>) => () => selectItem(item);
-  const onHoverItem = (index: number) => () => preSelect(index);
+  const onHoverItem = (index: number) => () => setActiveItemIndex(index);
   const divAttributes =
     process.env.NODE_ENV !== 'production' ? { 'data-cy': 'autocomplete' } : {};
   const itemAttributes =

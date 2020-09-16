@@ -5,7 +5,7 @@ import {
   RichMentionsInput,
   RichMentionsProvider,
   RichMentionsAutocomplete,
-  TMentionContextPublicMethods,
+  TMentionContext,
 } from '../src';
 
 const list = ['adrien', 'anna', 'guillaume', 'vincent', 'victor'].map(
@@ -22,7 +22,6 @@ const configs = [
     matchDisplay: '$1',
     customizeFragment: (fragment: HTMLSpanElement, final: boolean) => {
       fragment.className = final ? 'final' : 'pending';
-      return;
     },
     onMention: (text: string) => {
       const search = text.substr(1); // remove '@'
@@ -34,7 +33,7 @@ const configs = [
 const defaultValue = unescape(location.search.substr(1));
 const Root = () => {
   const [result, setResult] = React.useState('');
-  const ref = React.useRef<TMentionContextPublicMethods | null>(null);
+  const ref = React.useRef<TMentionContext | null>(null);
   const getResult = () => setResult(ref.current?.getTransformedValue() || '');
   const clear = () => ref.current?.setValue('');
   const insert = () => ref.current?.insertFragment('<@vincent|u3>');

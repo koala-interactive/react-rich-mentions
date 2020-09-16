@@ -1,16 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  FormEvent,
+  KeyboardEvent,
+  useEffect,
+  useState,
+  useRef,
+} from 'react';
+
 import {
   initialContext,
   MentionContext,
   TMentionItem,
   TMentionContext,
-  TMentionContextPublicMethods,
   TMentionConfig,
 } from './RichMentionsContext';
+
 import { getFragment } from './utils/getFragment';
-import { insertFragment } from './utils/insertFragment';
 import { fixCursorInsertion } from './utils/fixCursorInsertion';
-import { getTransformedValue } from './utils/getTransformedValue';
+import { insertFragment as insertFragmentUtils } from './utils/insertFragment';
+import { getTransformedValue as getTransformedValueUtils } from './utils/getTransformedValue';
 import { handleFragmentEscape } from './utils/handleFragmentEscape';
 import { removeBrokenFragments } from './utils/removeBrokenFragments';
 import { handleFragmentCreation } from './utils/handleFragmentCreation';
@@ -23,8 +30,8 @@ interface TProps<T = object> {
   children: React.ReactNode | React.ReactNode[];
   configs: TMentionConfig<T>[];
   getContext?:
-    | React.MutableRefObject<TMentionContextPublicMethods>
-    | ((ref: TMentionContextPublicMethods) => void);
+    | React.MutableRefObject<TMentionContext>
+    | ((ref: TMentionContext) => void);
   getInitialHTML?: (text: string) => string;
 }
 
@@ -34,15 +41,82 @@ export function RichMentionsProvider<T = object>({
   getContext,
   getInitialHTML = getConfigsInitialValue(configs),
 }: TProps<T>) {
-  const setPositionFixed: TMentionContext['setPositionFixed'] = fixed => {
+  // The reference to always have function context working
+  const ref = useRef<TMentionContext>({
+    ...initialContext,
+    getInitialHTML,
+    setPositionFixed,
+    setInputElement,
+    selectItem,
+    onBeforeChanges,
+    onChanges,
+    onKeyDown,
+    closeAutocomplete,
+    openAutocomplete,
+    setActiveItemIndex,
+    getTransformedValue,
+    insertFragment,
+    setValue,
+  });
+
+  // The state to controls react rendering
+  const [__ctx__, setState] = useState<TMentionContext>(ref.current);
+  const updateState = (data: Partial<TMentionContext>) => {
+    ref.current = {
+      ...ref.current,
+      ...data,
+    };
+    setState(ref.current);
+  };
+
+  // Listen for selection change to open/close the autocomplete modal
+  useEffect(() => {
+    document.addEventListener('selectionchange', onSelectionChange, false);
+    return () => {
+      document.removeEventListener('selectionchange', onSelectionChange, false);
+    };
+  }, []);
+
+  // Expose reference with new context
+  useEffect(() => {
+    if (typeof getContext === 'function') {
+      getContext(__ctx__);
+    } else if (typeof getContext === 'object') {
+      getContext.current = __ctx__;
+    }
+  }, [getContext, __ctx__]);
+
+  /**
+   * Listener to update autocomplete css fixed position
+   * Helpfull if you have an input fixed at the top/bottom of your website.
+   *
+   * @param {boolean} fixed Is input element position fixed ? Help to set correct autocomplete position
+   * @returns {void}
+   */
+  function setPositionFixed(fixed: boolean): void {
     updateState({ fixed });
-  };
+  }
 
-  const setInputElement: TMentionContext['setInputElement'] = inputElement => {
+  /**
+   * Listener to set new inputElement.
+   * Should be used only by the <InputElement /> to mount/unmount itself
+   *
+   * @param {HTMLDivElement | null} inputElement input element
+   * @returns {void}
+   */
+  function setInputElement(inputElement: HTMLDivElement | null): void {
     updateState({ inputElement });
-  };
+  }
 
-  const selectItem: TMentionContext['selectItem'] = item => {
+  /**
+   * Called by the autocomplete to select an item.
+   * It will transform the current pending fragment to a final one and
+   * reset the autocomplete
+   *
+   * @param {TMentionItem} item The item from autocomplete to select
+   * @returns {void}
+   */
+  function selectItem(item: TMentionItem<T>): void {
     const opened = ref.current.opened;
 
     if (opened?.element) {
@@ -56,11 +130,17 @@ export function RichMentionsProvider<T = object>({
       loading: false,
       activeSearch: '',
     });
-  };
+  }
 
-  const onBeforeChanges: TMentionContext['onBeforeChanges'] = event => {
+  /**
+   * Bounded to input.onBeforeInput event.
+   * Will help to insert/delete/escape fragment before it already happens to avoid a flash
+   *
+   * @param {FormEvent<HTMLDivElement>} event
+   * @returns {void}
+   */
+  function onBeforeChanges(event: FormEvent<HTMLDivElement>): void {
     let selection = document.getSelection();
-
     if (!selection || !selection.anchorNode) {
       return;
     }
@@ -80,20 +160,24 @@ export function RichMentionsProvider<T = object>({
     handleFragmentEscape(event, selection, configs);
     handleFragmentCreation(event, selection, configs, ref.current);
     removeBrokenFragments<T>(event.currentTarget, configs);
-  };
+  }
 
-  const onSelectionChange = () => {
+  /**
+   * Will handle document.onSelectionChange event
+   * In this case, just to know if wha have focus on a fragment to open/close the autocomplete
+   *
+   * @returns {void}
+   */
+  function onSelectionChange(): void {
     const selection = document.getSelection();
-    const fragment =
-      selection && selection.anchorNode && getFragment(selection.anchorNode);
-    const needAutocomplete =
-      fragment && !fragment.hasAttribute('data-integrity');
+    const fragment = selection?.anchorNode && getFragment(selection.anchorNode);
+    const shouldOpened = fragment && !fragment.hasAttribute('data-integrity');
     const opened = ref.current.opened;
 
-    if (opened && !needAutocomplete) {
+    if (opened && !shouldOpened) {
       closeAutocomplete();
     } else if (
-      needAutocomplete &&
+      shouldOpened &&
       fragment &&
       (!opened || opened.element !== fragment)
     ) {
@@ -103,17 +187,24 @@ export function RichMentionsProvider<T = object>({
         openAutocomplete(fragment, text, config);
       }
     }
-  };
+  }
 
-  const onChanges: TMentionContext['onChanges'] = event => {
+  /**
+   * Handle input.onChange event
+   * This part is just to remove broken fragment (let say you removed the "@" of a mention) and to
+   * Open/Close autocomplete based on the new cursor position.
+   *
+   * @param {FormEvent<HTMLDivElement>} event
+   * @returns {void}
+   */
+  function onChanges(event: FormEvent<HTMLDivElement>): void {
     const inputElement = event.currentTarget;
     const selection = document.getSelection();
 
     removeBrokenFragments<T>(inputElement, configs);
 
     // Autocomplete
-    const fragment =
-      selection && selection.anchorNode && getFragment(selection.anchorNode);
+    const fragment = selection?.anchorNode && getFragment(selection.anchorNode);
 
     if (fragment && !fragment.hasAttribute('data-integrity')) {
       const text = fragment.textContent || '';
@@ -121,12 +212,19 @@ export function RichMentionsProvider<T = object>({
       if (config) {
         openAutocomplete(fragment, text, config);
       }
-    } else if (ctx.opened) {
+    } else if (ref.current.opened) {
       closeAutocomplete();
     }
-  };
+  }
 
-  const onKeyDown: TMentionContext['onKeyDown'] = event => {
+  /**
+   * Handle input.onKeyDown event
+   * Just to manage the selected item on the autocomplete if opened
+   *
+   * @param {KeyboardEvent<HTMLDivElement>} event
+   * @returns {void}
+   */
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
     const {
       opened,
       results,
@@ -134,6 +232,7 @@ export function RichMentionsProvider<T = object>({
       selectItem,
       closeAutocomplete,
     } = ref.current;
+
     if (!opened || !results.length) {
       return;
     }
@@ -165,22 +264,35 @@ export function RichMentionsProvider<T = object>({
         closeAutocomplete();
         break;
     }
-  };
+  }
 
-  const closeAutocomplete: TMentionContext['closeAutocomplete'] = () => {
+  /**
+   * Public method to close the autocomplete
+   *
+   * @returns {void}
+   */
+  function closeAutocomplete(): void {
     updateState({
       opened: null,
       loading: false,
       results: [],
       index: 0,
     });
-  };
+  }
 
-  const openAutocomplete: TMentionContext['openAutocomplete'] = (
-    node,
-    text,
-    config
-  ) => {
+  /**
+   * Public method to open the autocomplete
+   *
+   * @param {HTMLElement} node Selected fragment where to open the autocomplete (for position)
+   * @param {string} text The fragment text we are autocompleting for
+   * @param {TMentionConfig} config The config object linked to the mention
+   * @returns {void}
+   */
+  function openAutocomplete<T>(
+    node: HTMLElement,
+    text: string,
+    config: TMentionConfig<T>
+  ): void {
     const fixed = ref.current.fixed;
     const rect = node.getBoundingClientRect();
     const y = fixed ? 0 : window.pageYOffset;
@@ -218,64 +330,55 @@ export function RichMentionsProvider<T = object>({
     } else if (p instanceof Array) {
       onResolve(p);
     }
-  };
+  }
 
-  const preSelect: TMentionContext['preSelect'] = index => {
+  /**
+   * Just set the active item in the autocomplete based on the index.
+   * Will work only if autocomplete is already opened
+   *
+   * @param {number} index The active element in autocomplete to hover
+   * @returns {void}
+   */
+  function setActiveItemIndex(index: number): void {
     updateState({ index });
-  };
+  }
 
-  const ref = useRef<TMentionContext>({
-    ...initialContext,
-    getInitialHTML,
-    setPositionFixed,
-    setInputElement,
-    selectItem,
-    onBeforeChanges,
-    onChanges,
-    onKeyDown,
-    closeAutocomplete,
-    openAutocomplete,
-    preSelect,
-  });
+  /**
+   * Transform input html content to usable text by transforming the
+   * fragments to valid text and erasing all invalid fragments.
+   *
+   * @returns {string}
+   */
+  function getTransformedValue(): string {
+    return getTransformedValueUtils(ref.current.inputElement);
+  }
 
-  const [ctx, setState] = useState<TMentionContext>(ref.current);
-  const updateState = (data: Partial<TMentionContext>) => {
-    ref.current = {
-      ...ref.current,
-      ...data,
-    };
-    setState(ref.current);
-  };
+  /**
+   * Helper to be able to insert a fragment "<@test|U211212>" inside the text
+   *
+   * @param {string} code The code to insert as fragment (preprocess by configs). Ex: "<@test|U211212>"
+   * @returns {void}
+   */
+  function insertFragment(code: string): void {
+    insertFragmentUtils<T>(code, configs, ref.current.inputElement);
+  }
 
-  // Listen for selection change to open/close the autocomplete modal
-  useEffect(() => {
-    document.addEventListener('selectionchange', onSelectionChange, false);
-    return () => {
-      document.removeEventListener('selectionchange', onSelectionChange, false);
-    };
-  }, []);
-
-  // Expose reference with publich methods
-  useEffect(() => {
-    const context: TMentionContextPublicMethods = {
-      getTransformedValue: () => getTransformedValue(ctx.inputElement),
-      insertFragment: ref => insertFragment<T>(ref, configs, ctx.inputElement),
-      setValue(text) {
-        if (ctx.inputElement) {
-          ctx.inputElement.innerHTML = getInitialHTML(text);
-        }
-        closeAutocomplete();
-      },
-    };
-
-    if (typeof getContext === 'function') {
-      getContext(context);
-    } else if (typeof getContext === 'object') {
-      getContext.current = context;
+  /**
+   * Helper to be able to change the input content externaly
+   *
+   * @param {string} text The text to insert
+   * @returns {void}
+   */
+  function setValue(text: string): void {
+    if (ref.current.inputElement) {
+      ref.current.inputElement.innerHTML = getInitialHTML(text);
     }
-  }, [getContext, ctx.inputElement]);
+    closeAutocomplete();
+  }
 
   return (
-    <MentionContext.Provider value={ctx}>{children}</MentionContext.Provider>
+    <MentionContext.Provider value={__ctx__}>
+      {children}
+    </MentionContext.Provider>
   );
 }

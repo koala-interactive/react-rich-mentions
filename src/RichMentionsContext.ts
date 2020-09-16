@@ -17,18 +17,15 @@ export interface TMentionConfig<T = object> {
   ) => void | TMentionItem<T>[] | Promise<TMentionItem<T>[]>;
 }
 
-export interface TMentionContextPublicMethods {
+export interface TMentionContext {
   getTransformedValue: () => string;
   setValue: (text: string) => void;
   insertFragment: (ref: string) => void;
-}
-
-export interface TMentionContext extends TMentionContextPublicMethods {
   activeSearch: string;
   inputElement: HTMLDivElement | null;
   setInputElement: (newInputElement: HTMLDivElement | null) => void;
   selectItem: (item: TMentionItem<any>) => void;
-  preSelect: (index: number) => void;
+  setActiveItemIndex: (index: number) => void;
   opened: null | {
     config: TMentionConfig<any>;
     element: HTMLSpanElement;
@@ -62,7 +59,7 @@ export const initialContext: TMentionContext = {
   inputElement: null,
   setInputElement: noop,
   selectItem: noop,
-  preSelect: noop,
+  setActiveItemIndex: noop,
   opened: null,
   index: 0,
   loading: false,

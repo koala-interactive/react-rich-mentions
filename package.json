@@ -33,7 +33,22 @@
     "trailingComma": "es5"
   },
   "name": "react-rich-mentions",
+  "description": "@mentions people, or #channels, or :smileys: on contenteditable element with styles",
   "author": "Vincent Thibault",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koala-interactive/react-rich-mentions.git"
+  },
+  "keywords": [
+    "react",
+    "react-rich-mentions",
+    "rich",
+    "mentions"
+  ],
+  "bugs": {
+    "url": "https://github.com/koala-interactive/react-rich-mentions/issues"
+  },
+  "homepage": "https://github.com/koala-interactive/react-rich-mentions#readme",
   "module": "dist/react-rich-mentions.esm.js",
   "devDependencies": {
     "@types/react": "^16.9.47",
