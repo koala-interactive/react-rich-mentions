@@ -116,9 +116,11 @@ context('Pending fragment', () => {
 
   describe('Handle invalid spaces', () => {
     it('Fixes problem with space before element', () => {
-      cy.get('[data-cy=input]').type(
-        'test{leftarrow}{leftarrow}{leftarrow}@{leftarrow}{backspace}{rightarrow} '
-      );
+      cy.get('[data-cy=input]')
+        .type(
+          'test{leftarrow}{leftarrow}{leftarrow}@{leftarrow}{backspace}{rightarrow}'
+        )
+        .type(' ');
 
       cy.get('[data-cy=input]').textEqual('@ est');
       cy.get('[data-cy=autocomplete]').should('not.exist', 1);
