@@ -88,7 +88,7 @@ export function RichMentionsProvider<T = object>({
 
   /**
    * Listener to update autocomplete css fixed position
-   * Helpfull if you have an input fixed at the top/bottom of your website.
+   * Helpful if you have an input fixed at the top/bottom of your website.
    *
    * @param {boolean} fixed Is input element position fixed ? Help to set correct autocomplete position
    * @returns {void}
