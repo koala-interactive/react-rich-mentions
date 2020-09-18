@@ -30,10 +30,9 @@ export function removeBrokenFragments<T>(
     // On final fragments, avoid edition.
     // The data-integrity attribute contains the original fragment content.
     // If it does not match, just remove the entire fragment.
-    if (element.getAttribute('data-integrity')) {
+    if (element.hasAttribute('data-integrity')) {
       // final fragment, if not valid remove it completely
-      const isValid = element.getAttribute('data-integrity') === text;
-      if (!isValid) {
+      if (element.getAttribute('data-integrity') !== element.innerHTML) {
         inputElement.removeChild(element);
       }
       return;
