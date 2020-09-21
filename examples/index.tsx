@@ -36,7 +36,12 @@ const Root = () => {
   const ref = React.useRef<TMentionContext | null>(null);
   const getResult = () => setResult(ref.current?.getTransformedValue() || '');
   const clear = () => ref.current?.setValue('');
-  const insert = () => ref.current?.insertFragment('<@vincent|u3>');
+  const insertPseudo = () => ref.current?.insertFragment('<@vincent|u3>');
+  const insertSmiley = () => {
+    const img = new Image(20, 20);
+    img.src = require('./unicorn.png');
+    ref.current?.insertFragment(':unicorn:', img);
+  };
 
   return (
     <RichMentionsProvider configs={configs} getContext={ref}>
@@ -48,8 +53,11 @@ const Root = () => {
       <button data-cy="clear" type="button" onClick={clear}>
         Clear
       </button>
-      <button data-cy="insert" type="button" onClick={insert}>
+      <button data-cy="insert" type="button" onClick={insertPseudo}>
         Insert name
+      </button>
+      <button data-cy="insert-custom" type="button" onClick={insertSmiley}>
+        Insert unicorn
       </button>
       <pre data-cy="result">{result}</pre>
     </RichMentionsProvider>

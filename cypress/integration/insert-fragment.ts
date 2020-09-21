@@ -201,4 +201,24 @@ context('Insert fragment', () => {
     cy.get('[data-cy=input]').textEqual('a @vincent b');
     cy.get('[data-cy=final]').should('have.text', '@vincent');
   });
+
+  describe('custom fragment', () => {
+    it('Insert proper unicorn', () => {
+      cy.get('[data-cy=input]').type('hello ');
+      cy.get('[data-cy=insert-custom]').click();
+
+      cy.get('[data-cy=final] img').should('exist');
+
+      cy.get('[data-cy=parse]').click();
+      cy.get('[data-cy=result]').should('have.text', 'hello :unicorn:');
+    });
+
+    it('Insert inside final fragment should delete', () => {
+      cy.get('[data-cy=input]').type('hello @vic{enter}{leftarrow}{leftarrow}');
+      cy.get('[data-cy=insert-custom]').click();
+      cy.get('[data-cy=final] img').should('exist');
+      cy.get('[data-cy=parse]').click();
+      cy.get('[data-cy=result]').should('have.text', 'hello :unicorn:');
+    });
+  });
 });

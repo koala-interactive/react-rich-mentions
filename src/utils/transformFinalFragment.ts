@@ -16,7 +16,7 @@ export function transformFinalFragment<T>(
 
   span.textContent = content;
   span.setAttribute('data-rich-mentions', ref);
-  span.setAttribute('data-integrity', content);
+  span.setAttribute('data-integrity', span.innerHTML);
   span.setAttribute('spellcheck', 'false');
 
   if (process.env.NODE_ENV !== 'production') {

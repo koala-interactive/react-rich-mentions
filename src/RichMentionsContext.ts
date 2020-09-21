@@ -20,7 +20,7 @@ export interface TMentionConfig<T = object> {
 export interface TMentionContext {
   getTransformedValue: () => string;
   setValue: (text: string) => void;
-  insertFragment: (ref: string) => void;
+  insertFragment: (ref: string, element?: HTMLElement) => void;
   activeSearch: string;
   inputElement: HTMLDivElement | null;
   setInputElement: (newInputElement: HTMLDivElement | null) => void;

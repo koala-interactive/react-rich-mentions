@@ -42,13 +42,14 @@ const needSpaceAfter = (text: string, offset: number, node: Node): boolean => {
 
 export function insertFragment<T>(
   ref: string,
+  customFragment: HTMLElement | null,
   configs: TMentionConfig<T>[],
   inputElement: HTMLDivElement | null
 ) {
   const config = configs.find(cfg => ref.match(cfg.match));
 
   // inputElement was removed from DOM for some reasons
-  if (!inputElement || !config) {
+  if (!inputElement || (!config && !customFragment)) {
     return;
   }
 
@@ -153,7 +154,18 @@ export function insertFragment<T>(
 
   // Create fragment
   const span = document.createElement('span');
-  transformFinalFragment(span, ref, config);
+  if (config) {
+    transformFinalFragment(span, ref, config);
+  } else if (customFragment) {
+    span.appendChild(customFragment);
+    span.setAttribute('data-rich-mentions', ref);
+    span.setAttribute('data-integrity', span.innerHTML);
+    span.setAttribute('spellcheck', 'false');
+
+    if (process.env.NODE_ENV !== 'production') {
+      span.setAttribute('data-cy', 'final');
+    }
+  }
 
   // Insert it at chosen position
   if (insertAfterNode && insertAfterNode !== inputElement) {

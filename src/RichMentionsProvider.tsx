@@ -357,10 +357,14 @@ export function RichMentionsProvider<T = object>({
    * Helper to be able to insert a fragment "<@test|U211212>" inside the text
    *
    * @param {string} code The code to insert as fragment (preprocess by configs). Ex: "<@test|U211212>"
+   * @param {HTMLElement?} element (optional) the html element to insert
    * @returns {void}
    */
-  function insertFragment(code: string): void {
-    insertFragmentUtils<T>(code, configs, ref.current.inputElement);
+  function insertFragment(
+    code: string,
+    element: HTMLElement | null = null
+  ): void {
+    insertFragmentUtils<T>(code, element, configs, ref.current.inputElement);
   }
 
   /**
