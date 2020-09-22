@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { MentionContext, TMentionItem } from './RichMentionsContext';
+import { RichMentionContext, TMentionItem } from './RichMentionsContext';
 
 interface TProps {
   fixed?: boolean;
@@ -14,7 +14,7 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
     setActiveItemIndex,
     selectItem,
     setPositionFixed,
-  } = useContext(MentionContext);
+  } = useContext(RichMentionContext);
 
   const onSelectItem = (item: TMentionItem<T>) => () => selectItem(item);
   const onHoverItem = (index: number) => () => setActiveItemIndex(index);

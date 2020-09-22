@@ -8,7 +8,7 @@ import React, {
 
 import {
   initialContext,
-  MentionContext,
+  RichMentionContext,
   TMentionItem,
   TMentionContext,
   TMentionConfig,
@@ -30,7 +30,7 @@ interface TProps<T = object> {
   children: React.ReactNode | React.ReactNode[];
   configs: TMentionConfig<T>[];
   getContext?:
-    | React.MutableRefObject<TMentionContext>
+    | React.MutableRefObject<TMentionContext | null>
     | ((ref: TMentionContext) => void);
   getInitialHTML?: (text: string) => string;
 }
@@ -381,8 +381,8 @@ export function RichMentionsProvider<T = object>({
   }
 
   return (
-    <MentionContext.Provider value={__ctx__}>
+    <RichMentionContext.Provider value={__ctx__}>
       {children}
-    </MentionContext.Provider>
+    </RichMentionContext.Provider>
   );
 }
