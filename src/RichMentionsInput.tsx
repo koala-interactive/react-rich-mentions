@@ -1,5 +1,5 @@
 import React, { HTMLProps, useRef, useContext } from 'react';
-import { MentionContext } from './RichMentionsContext';
+import { RichMentionContext } from './RichMentionsContext';
 
 interface TProps extends HTMLProps<HTMLDivElement> {
   defaultValue?: string;
@@ -13,7 +13,7 @@ export function RichMentionsInput({ defaultValue, ...divAttributes }: TProps) {
     onKeyDown,
     onChanges,
     getInitialHTML,
-  } = useContext(MentionContext);
+  } = useContext(RichMentionContext);
 
   if (ref.current === null && defaultValue && getInitialHTML) {
     ref.current = getInitialHTML(defaultValue);

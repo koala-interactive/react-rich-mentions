@@ -73,4 +73,6 @@ export const initialContext: TMentionContext = {
   setPositionFixed: noop,
 };
 
-export const MentionContext = createContext<TMentionContext>(initialContext);
+export const RichMentionContext = createContext<TMentionContext>(
+  initialContext
+);
