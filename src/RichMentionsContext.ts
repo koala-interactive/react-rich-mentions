@@ -45,7 +45,7 @@ export interface TMentionContext {
   ) => void;
   onBeforeChanges: (event: React.FormEvent<HTMLDivElement>) => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void;
-  onChanges: (event: React.KeyboardEvent<HTMLDivElement>) => void;
+  onChanges: (event: React.FormEvent<HTMLDivElement>) => void;
   getInitialHTML?: (value: string) => string;
   fixed: boolean;
   setPositionFixed: (fixed: boolean) => void;
@@ -73,6 +73,6 @@ export const initialContext: TMentionContext = {
   setPositionFixed: noop,
 };
 
-export const RichMentionContext = createContext<TMentionContext>(
+export const RichMentionsContext = createContext<TMentionContext>(
   initialContext
 );

@@ -1,5 +1,5 @@
 import React, { HTMLProps, useRef, useContext } from 'react';
-import { RichMentionContext } from './RichMentionsContext';
+import { RichMentionsContext } from './RichMentionsContext';
 
 interface TProps extends HTMLProps<HTMLDivElement> {
   defaultValue?: string;
@@ -13,7 +13,7 @@ export function RichMentionsInput({ defaultValue, ...divAttributes }: TProps) {
     onKeyDown,
     onChanges,
     getInitialHTML,
-  } = useContext(RichMentionContext);
+  } = useContext(RichMentionsContext);
 
   if (ref.current === null && defaultValue && getInitialHTML) {
     ref.current = getInitialHTML(defaultValue);
@@ -24,14 +24,37 @@ export function RichMentionsInput({ defaultValue, ...divAttributes }: TProps) {
     divAttributes['data-cy'] = 'input';
   }
 
+  const mergeOnKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    onKeyDown(event);
+
+    if (divAttributes.onKeyDown) {
+      divAttributes.onKeyDown(event);
+    }
+  };
+
+  const onInput = (event: React.FormEvent<HTMLDivElement>) => {
+    if (divAttributes.onInput) {
+      divAttributes.onInput(event);
+    }
+    onChanges(event);
+  };
+
+  const onBeforeInput = (event: React.FormEvent<HTMLDivElement>) => {
+    onBeforeChanges(event);
+
+    if (divAttributes.onBeforeInput) {
+      divAttributes.onBeforeInput(event);
+    }
+  };
+
   return (
     <div
       ref={setInputElement}
       {...divAttributes}
       contentEditable={true}
-      onBeforeInput={onBeforeChanges}
-      onKeyDown={onKeyDown}
-      onInput={onChanges}
+      onBeforeInput={onBeforeInput}
+      onKeyDown={mergeOnKeyDown}
+      onInput={onInput}
       dangerouslySetInnerHTML={{ __html: ref.current || '' }}
     ></div>
   );
