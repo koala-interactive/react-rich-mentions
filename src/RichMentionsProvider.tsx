@@ -8,7 +8,7 @@ import React, {
 
 import {
   initialContext,
-  RichMentionContext,
+  RichMentionsContext,
   TMentionItem,
   TMentionContext,
   TMentionConfig,
@@ -381,8 +381,8 @@ export function RichMentionsProvider<T = object>({
   }
 
   return (
-    <RichMentionContext.Provider value={__ctx__}>
+    <RichMentionsContext.Provider value={__ctx__}>
       {children}
-    </RichMentionContext.Provider>
+    </RichMentionsContext.Provider>
   );
 }
