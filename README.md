@@ -137,3 +137,30 @@ The context returned by `getContext` props.
 | getTransformedValue | function | `const text = ctx.getTransformedValue()` | Get the input value with fragment transformed to valid code         |
 | setValue            | function | `ctx.setValue('Hello <@world\|U15151>')` | Change the input value, will transform the code with valid fragment |
 | insertFragment      | function | `ctx.insertFragment('<@world\|U45454>')` | Add a fragment at the current cursor position                       |
+
+## Building Locally
+
+After cloning the repository, install all dependencies :
+
+```
+yarn
+```
+
+or
+
+```
+npm install
+```
+
+### Testing
+
+To test this project, we use cypress : https://docs.cypress.io/guides/overview/why-cypress.html
+
+```
+cd ./examples
+yarn (OR npm install)
+cd ..
+yarn cypress:headless
+```
+
+If you develop a new feature, be sure to add tests in the `cypress` folder, following documentation from the above website.
