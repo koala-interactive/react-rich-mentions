@@ -277,6 +277,7 @@ export function RichMentionsProvider<T = object>({
       loading: false,
       results: [],
       index: 0,
+      activeSearch: '',
     });
   }
 
@@ -313,6 +314,7 @@ export function RichMentionsProvider<T = object>({
             : window.innerWidth - 200,
         y: bottom ? rect.top + y - 3 : rect.bottom + y + 3,
       },
+      activeSearch: text,
     });
 
     const onResolve = (results: TMentionItem[] = []) => {
