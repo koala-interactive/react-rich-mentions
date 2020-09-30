@@ -7,7 +7,10 @@ export function removeBrokenFragments<T>(
   Array.from(inputElement.children).forEach(element => {
     // Chrome is adding empty div when pressing {enter} key
     // For now we can just allow it and keep it on the DOM
-    if (element instanceof HTMLDivElement && !element.attributes.length) {
+    if (
+      (element instanceof HTMLDivElement && !element.attributes.length) ||
+      element instanceof HTMLBRElement
+    ) {
       return;
     }
 
