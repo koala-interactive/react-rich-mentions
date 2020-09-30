@@ -47,6 +47,16 @@ context('Get transformed value', () => {
     cy.get('[data-cy=result]').should('have.text', 'hello\nworld\n.');
   });
 
+  it('Should handle <br/> linebreak', () => {
+    cy.visit(Cypress.env('baseUrl') + '?hello%0Aworld');
+    cy.get('[data-cy=input]').type('{shift}{enter}.');
+    cy.get('[data-cy=input]').then($el =>
+      expect($el[0].innerText).to.eq('hello\nworld\n.')
+    );
+    cy.get('[data-cy=parse]').click();
+    cy.get('[data-cy=result]').should('have.text', 'hello\nworld\n.');
+  });
+
   it('Should be able to clear', () => {
     cy.visit(Cypress.env('baseUrl') + '?hello%0Aworld');
     cy.get('[data-cy=input]').then($el =>
