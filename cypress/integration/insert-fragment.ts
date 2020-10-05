@@ -220,5 +220,28 @@ context('Insert fragment', () => {
       cy.get('[data-cy=parse]').click();
       cy.get('[data-cy=result]').should('have.text', 'hello :unicorn:');
     });
+
+    it('Handle inserting after a return to line', () => {
+      cy.get('[data-cy=input]').type('hello{enter}');
+      cy.get('[data-cy=insert-custom]').click();
+      cy.get('[data-cy=final] img').should('exist');
+      cy.get('[data-cy=parse]').click({ force: true });
+      cy.get('[data-cy=result]').should('have.text', 'hello\n:unicorn:');
+    });
+
+    it('Be able to write text after emoji without deleting it', () => {
+      cy.get('[data-cy=input]').type('hello{enter}');
+      cy.get('[data-cy=insert-custom]').click();
+      cy.get('[data-cy=final] img').should('exist');
+      cy.get('[data-cy=input]').type('.');
+      cy.get('[data-cy=parse]').click({ force: true });
+      cy.get('[data-cy=result]').should('have.text', 'hello\n:unicorn: .');
+    });
+
+    it('Insert icon if no content', () => {
+      cy.get('[data-cy=insert-custom]').click();
+      cy.get('[data-cy=parse]').click({ force: true });
+      cy.get('[data-cy=result]').should('have.text', ':unicorn:');
+    });
   });
 });

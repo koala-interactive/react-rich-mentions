@@ -33,10 +33,11 @@ Cypress.Commands.add(
     const regexp = data
       .replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&')
       .replace(/\s/g, '(\\u00a0|\\s)');
+    const text = subject[0].innerText;
 
     expect(
-      new RegExp(`^${regexp}$`).test(subject.text()),
-      `textEqual("${data}", "${subject.text()}")`
+      new RegExp(`^${regexp}$`).test(text),
+      `textEqual("${data}", "${text}")`
     ).to.be.true;
 
     // whatever we return becomes the new subject
