@@ -1,10 +1,32 @@
 import { TMentionConfig } from '../RichMentionsContext';
+import { setCursorPosition } from './setCursorPosition';
 
 export function removeBrokenFragments<T>(
   inputElement: HTMLDivElement,
   configs: TMentionConfig<T>[]
 ) {
   Array.from(inputElement.children).forEach(element => {
+    /**
+     * https://github.com/koala-interactive/react-rich-mentions/pull/11
+     * When pressing enter, browsers adds <div><br/></div>
+     * This code removes the div and set the cursor after the <br/>
+     * To allow fragment insertion after the breakline.
+     */
+    if (
+      element instanceof HTMLDivElement &&
+      !element.attributes.length &&
+      element.childNodes.length === 1 &&
+      element.firstElementChild instanceof HTMLBRElement
+    ) {
+      const textNode = document.createTextNode('\u00A0');
+      const br = element.firstElementChild;
+      inputElement.insertBefore(br, element.nextSibling);
+      inputElement.insertBefore(textNode, br.nextSibling);
+      inputElement.removeChild(element);
+      setCursorPosition(textNode, 0);
+      return;
+    }
+
     // Chrome is adding empty div when pressing {enter} key
     // For now we can just allow it and keep it on the DOM
     if (

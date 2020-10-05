@@ -32,6 +32,7 @@ export function fixCursorInsertion(
           previousChild &&
           previousElement &&
           previousChild === previousElement &&
+          previousElement.hasAttribute('data-rich-mentions') &&
           !previousElement.hasAttribute('data-integrity')
         ) {
           previousElement.appendChild(document.createTextNode(insertion));
