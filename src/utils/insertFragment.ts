@@ -167,8 +167,30 @@ export function insertFragment<T>(
     }
   }
 
+  const insertAfterReturnToLine =
+    insertBeforeNode &&
+    insertBeforeNode.nodeName === 'DIV' &&
+    insertBeforeNode.childNodes.length === 1 &&
+    insertBeforeNode.firstChild?.nodeName === 'BR';
+
   // Insert it at chosen position
-  if (insertAfterNode && insertAfterNode !== inputElement) {
+  if (
+    insertBeforeNode &&
+    insertBeforeNode.firstChild &&
+    insertAfterReturnToLine
+  ) {
+    /**
+     * In case of inserting fragment after a line return
+     * We need to replace the <div></br></div> by <br/>{fragment}
+     * No spaces are needed to be add.
+     */
+    const br = document.createElement('br');
+
+    inputElement.insertBefore(br, insertBeforeNode);
+    inputElement.replaceChild(span, insertBeforeNode);
+    addSpaceAfter = false;
+    addSpaceBefore = false;
+  } else if (insertAfterNode && insertAfterNode !== inputElement) {
     inputElement.insertBefore(span, insertAfterNode.nextSibling);
   } else if (insertBeforeNode && insertBeforeNode !== inputElement) {
     inputElement.insertBefore(span, insertBeforeNode);
