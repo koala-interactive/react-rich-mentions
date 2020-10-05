@@ -40,11 +40,9 @@ context('Get transformed value', () => {
   it('Should handle line break', () => {
     cy.visit(Cypress.env('baseUrl') + '?hello%0Aworld');
     cy.get('[data-cy=input]').type('{enter}.');
-    cy.get('[data-cy=input]').then($el =>
-      expect($el[0].innerText).to.eq('hello\nworld\n.')
-    );
+    cy.get('[data-cy=input]').textEqual('hello\nworld\n. ');
     cy.get('[data-cy=parse]').click();
-    cy.get('[data-cy=result]').should('have.text', 'hello\nworld\n.');
+    cy.get('[data-cy=result]').textEqual('hello\nworld\n.');
   });
 
   it('Should handle <br/> linebreak', () => {
