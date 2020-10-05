@@ -181,7 +181,7 @@ export function insertFragment<T>(
   ) {
     /**
      * In case of inserting fragment after a line return
-     * We need to replace the <div></br></div> by <br/>{fragment}
+     * We need to replace the <div><br/></div> by <br/>{fragment}
      * No spaces are needed to be add.
      */
     const br = document.createElement('br');
