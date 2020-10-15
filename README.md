@@ -132,11 +132,11 @@ const MyComponent = () => {
 
 The context returned by `getContext` props.
 
-| Prop name           | Type     | Example                                  | Description                                                         |
-| ------------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------- |
-| getTransformedValue | function | `const text = ctx.getTransformedValue()` | Get the input value with fragment transformed to valid code         |
-| setValue            | function | `ctx.setValue('Hello <@world\|U15151>')` | Change the input value, will transform the code with valid fragment |
-| insertFragment      | function | `ctx.insertFragment('<@world\|U45454>')` | Add a fragment at the current cursor position                       |
+| Prop name           | Type     | Example                                  | Description                                                                                                                                                                                                                                                                                                                                              |
+| ------------------- | -------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| getTransformedValue | function | `const text = ctx.getTransformedValue()` | Get the input value with fragment transformed to valid code                                                                                                                                                                                                                                                                                              |
+| setValue            | function | `ctx.setValue('Hello <@world\|U15151>')` | Change the input value, will transform the code with valid fragment. It's possible to insert HTML so make sure to sanitize your user's input. Note that for a valid html to be set, you will have to add the following html attribute so it's not remove from the engine `data-rich-mentions=":smile:"` where ":smile:" is the final extracted reference |
+| insertFragment      | function | `ctx.insertFragment('<@world\|U45454>')` | Add a fragment at the current cursor position                                                                                                                                                                                                                                                                                                            |
 
 ## Building Locally
 
