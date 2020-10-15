@@ -7,6 +7,7 @@ import {
   RichMentionsAutocomplete,
   TMentionContext,
 } from '../src';
+const unicornImage = require('./unicorn.png');
 
 const list = ['adrien', 'anna', 'guillaume', 'vincent', 'victor'].map(
   (v, i) => ({
@@ -39,12 +40,12 @@ const Root = () => {
   const insertPseudo = () => ref.current?.insertFragment('<@vincent|u3>');
   const insertSmiley = () => {
     const img = new Image(20, 20);
-    img.src = require('./unicorn.png');
+    img.src = unicornImage;
     ref.current?.insertFragment(':unicorn:', img);
   };
   const customSetValue = () => {
     ref.current?.setValue(
-      '<span data-rich-mentions=":smile:" class="emojione" style="font-size: 19px; line-height: 19px;">😉</span>    <span data-rich-mentions=":smile:" class="emojione" style="font-size: 19px; line-height: 19px;">😉</span> <img data-rich-mentions=":smile:" src="/images/emojione/2620.png" width="19" height="19" class="emojione vaM" />'
+      `<span data-rich-mentions=":smile:" class="emojione" style="font-size: 19px; line-height: 19px;">😉</span>    <span data-rich-mentions=":smile:" class="emojione" style="font-size: 19px; line-height: 19px;">😉</span> <img data-rich-mentions=":smile:" src="${unicornImage}" width="19" height="19" class="emojione vaM" />`
     );
   };
 

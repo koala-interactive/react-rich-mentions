@@ -29,14 +29,17 @@ function replaceSpacesWithInsecableSpaces(text: string): string {
 
 export function getConfigsInitialValue(configs: TMentionConfig<any>[]) {
   return (text: string): string => {
-    return replaceSpacesWithInsecableSpaces(
-      configs.reduce((acc, config) => {
-        return acc.replace(config.match, $0 => {
-          const span = document.createElement('span');
-          transformFinalFragment(span, $0, config);
-          return span.outerHTML;
-        });
-      }, text)
-    );
+    // This replace all fragment "<@vince|U515>" to html ones based on your configs
+    const formattedTextWithHtml = configs.reduce((acc, config) => {
+      return acc.replace(config.match, $0 => {
+        const span = document.createElement('span');
+        transformFinalFragment(span, $0, config);
+        return span.outerHTML;
+      });
+    }, text);
+
+    // We replace all text spaces with unbreakable ones to avoid problem with contenteditable.
+    // Currently, contenteditable remove multiple space but we want to keep it.
+    return replaceSpacesWithInsecableSpaces(formattedTextWithHtml);
   };
 }
