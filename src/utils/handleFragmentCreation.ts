@@ -53,10 +53,6 @@ export function handleFragmentCreation(
   );
   const afterInsertion = text.substr(index + textQuery.length);
 
-  if (config.customizeFragment) {
-    config.customizeFragment(fragment, false);
-  }
-
   fragment.setAttribute('data-rich-mentions', '');
   fragment.setAttribute('spellcheck', 'false');
 
@@ -65,6 +61,11 @@ export function handleFragmentCreation(
   }
 
   fragment.textContent = textQuery;
+
+  if (config.customizeFragment) {
+    config.customizeFragment(fragment, false);
+  }
+
   const after = document.createTextNode(
     /^\s/.test(afterInsertion) ? afterInsertion : ' ' + afterInsertion
   );

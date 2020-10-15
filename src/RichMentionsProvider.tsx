@@ -378,6 +378,7 @@ export function RichMentionsProvider<T = object>({
   function setValue(text: string): void {
     if (ref.current.inputElement) {
       ref.current.inputElement.innerHTML = getInitialHTML(text);
+      removeBrokenFragments(ref.current.inputElement, configs);
     }
     closeAutocomplete();
   }

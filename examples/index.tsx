@@ -43,8 +43,10 @@ const Root = () => {
     ref.current?.insertFragment(':unicorn:', img);
   };
   const customSetValue = () => {
-    ref.current?.setValue('<em class="emojione" style="font-size: 19px; line-height: 19px;">😉</em>    <em class="emojione" style="font-size: 19px; line-height: 19px;">😉</em> <img src="/images/emojione/2620.png" width="19" height="19" class="emojione vaM" />')
-  }
+    ref.current?.setValue(
+      '<span data-rich-mentions=":smile:" class="emojione" style="font-size: 19px; line-height: 19px;">😉</span>    <span data-rich-mentions=":smile:" class="emojione" style="font-size: 19px; line-height: 19px;">😉</span> <img data-rich-mentions=":smile:" src="/images/emojione/2620.png" width="19" height="19" class="emojione vaM" />'
+    );
+  };
 
   return (
     <RichMentionsProvider configs={configs} getContext={ref}>
@@ -62,7 +64,9 @@ const Root = () => {
       <button data-cy="insert-custom" type="button" onClick={insertSmiley}>
         Insert unicorn
       </button>
-      <button data-cy="set-value" type="button" onClick={customSetValue}>Custom set value</button>
+      <button data-cy="set-value" type="button" onClick={customSetValue}>
+        Custom set value
+      </button>
       <pre data-cy="result">{result}</pre>
     </RichMentionsProvider>
   );
