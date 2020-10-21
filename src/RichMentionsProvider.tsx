@@ -297,21 +297,26 @@ export function RichMentionsProvider<T = object>({
     const fixed = ref.current.fixed;
     const rect = { top: 0, right: 0, bottom: 0, left: 0 };
     const nodeRect = node.getBoundingClientRect();
-    const scrollY = fixed ? 0 : window.pageYOffset;
-    const scrollX = fixed ? 0 : window.pageXOffset;
 
+    let scrollY = 0;
+    let scrollX = 0;
     rect.top = nodeRect.top;
     rect.right = nodeRect.right;
     rect.bottom = nodeRect.bottom;
     rect.left = nodeRect.left;
 
     // Substract based on relative parent if not position:fixed
-    if (!fixed && node.offsetParent) {
-      const parentRect = node.offsetParent.getBoundingClientRect();
-      rect.top -= parentRect.top;
-      rect.right -= parentRect.right;
-      rect.left -= parentRect.left;
-      rect.bottom = rect.bottom - parentRect.bottom + parentRect.height;
+    if (!fixed) {
+      if (node.offsetParent) {
+        const parentRect = node.offsetParent.getBoundingClientRect();
+        rect.top -= parentRect.top;
+        rect.right -= parentRect.right;
+        rect.left -= parentRect.left;
+        rect.bottom = rect.bottom - parentRect.bottom + parentRect.height;
+      } else {
+        scrollY = window.pageYOffset;
+        scrollX = window.pageXOffset;
+      }
     }
 
     const bottom = rect.bottom + 300 > window.innerHeight;
