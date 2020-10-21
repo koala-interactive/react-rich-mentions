@@ -295,10 +295,31 @@ export function RichMentionsProvider<T = object>({
     config: TMentionConfig<T>
   ): void {
     const fixed = ref.current.fixed;
-    const rect = node.getBoundingClientRect();
-    const y = fixed ? 0 : window.pageYOffset;
-    const x = fixed ? 0 : window.pageXOffset;
+    const rect = { top: 0, right: 0, bottom: 0, left: 0 };
+    const nodeRect = node.getBoundingClientRect();
+    const scrollY = fixed ? 0 : window.pageYOffset;
+    const scrollX = fixed ? 0 : window.pageXOffset;
+
+    rect.top = nodeRect.top;
+    rect.right = nodeRect.right;
+    rect.bottom = nodeRect.bottom;
+    rect.left = nodeRect.left;
+
+    // Substract based on relative parent if not position:fixed
+    if (!fixed && node.offsetParent) {
+      const parentRect = node.offsetParent.getBoundingClientRect();
+      rect.top -= parentRect.top;
+      rect.right -= parentRect.right;
+      rect.left -= parentRect.left;
+      rect.bottom = rect.bottom - parentRect.bottom + parentRect.height;
+    }
+
     const bottom = rect.bottom + 300 > window.innerHeight;
+    const x =
+      rect.left + 10 + 200 + scrollX < window.innerWidth
+        ? rect.left + scrollX + 10
+        : window.innerWidth - 200;
+    const y = bottom ? rect.top + scrollY - 3 : rect.bottom + scrollY + 3;
 
     updateState({
       loading: true,
@@ -308,11 +329,8 @@ export function RichMentionsProvider<T = object>({
         fixed,
         bottom,
         element: node,
-        x:
-          rect.left + 10 + 200 + x < window.innerWidth
-            ? rect.left + x + 10
-            : window.innerWidth - 200,
-        y: bottom ? rect.top + y - 3 : rect.bottom + y + 3,
+        x,
+        y,
       },
       activeSearch: text,
     });
