@@ -31,6 +31,7 @@ export interface TMentionContext {
     element: HTMLSpanElement;
     fixed: boolean;
     bottom: boolean;
+    right: boolean;
     x: number;
     y: number;
   };
