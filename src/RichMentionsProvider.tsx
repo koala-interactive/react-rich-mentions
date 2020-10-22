@@ -169,10 +169,21 @@ export function RichMentionsProvider<T = object>({
    * @returns {void}
    */
   function onSelectionChange(): void {
+    const {
+      inputElement,
+      opened,
+      closeAutocomplete,
+      openAutocomplete,
+    } = ref.current;
+
     const selection = document.getSelection();
     const fragment = selection?.anchorNode && getFragment(selection.anchorNode);
-    const shouldOpened = fragment && !fragment.hasAttribute('data-integrity');
-    const opened = ref.current.opened;
+
+    const shouldOpened =
+      fragment &&
+      !fragment.hasAttribute('data-integrity') &&
+      inputElement &&
+      inputElement.contains(fragment);
 
     if (opened && !shouldOpened) {
       closeAutocomplete();
@@ -197,11 +208,13 @@ export function RichMentionsProvider<T = object>({
    * @param {FormEvent<HTMLDivElement>} event
    * @returns {void}
    */
-  function onChanges(event: FormEvent<HTMLDivElement>): void {
-    const inputElement = event.currentTarget;
+  function onChanges(): void {
+    const { inputElement, openAutocomplete, closeAutocomplete } = ref.current;
     const selection = document.getSelection();
 
-    removeBrokenFragments<T>(inputElement, configs);
+    if (inputElement) {
+      removeBrokenFragments<T>(inputElement, configs);
+    }
 
     // Autocomplete
     const fragment = selection?.anchorNode && getFragment(selection.anchorNode);
@@ -297,8 +310,6 @@ export function RichMentionsProvider<T = object>({
     const fixed = ref.current.fixed;
     const rect = { top: 0, right: 0, bottom: 0, left: 0 };
     const nodeRect = node.getBoundingClientRect();
-    const scrollY = fixed ? 0 : window.pageYOffset;
-    const scrollX = fixed ? 0 : window.pageXOffset;
 
     rect.top = nodeRect.top;
     rect.right = nodeRect.right;
@@ -309,17 +320,21 @@ export function RichMentionsProvider<T = object>({
     if (!fixed && node.offsetParent) {
       const parentRect = node.offsetParent.getBoundingClientRect();
       rect.top -= parentRect.top;
-      rect.right -= parentRect.right;
+      rect.right = rect.right - parentRect.right + parentRect.width;
       rect.left -= parentRect.left;
       rect.bottom = rect.bottom - parentRect.bottom + parentRect.height;
     }
 
-    const bottom = rect.bottom + 300 > window.innerHeight;
-    const x =
-      rect.left + 10 + 200 + scrollX < window.innerWidth
-        ? rect.left + scrollX + 10
-        : window.innerWidth - 200;
-    const y = bottom ? rect.top + scrollY - 3 : rect.bottom + scrollY + 3;
+    // TODO ELEMENT_WIDTH and ELEMENT_HEIGHT from Input Autocomplete element
+    const ELEMENT_WIDTH = 200;
+    const ELEMENT_HEIGHT = 300;
+
+    // TODO calculate overflow
+    const overflowX = nodeRect.left + 10 + ELEMENT_WIDTH - window.innerWidth;
+    const overflowY = nodeRect.bottom + ELEMENT_HEIGHT - window.innerHeight;
+
+    const x = overflowX > 0 ? rect.right + 15 : rect.left - 3;
+    const y = overflowY > 0 ? rect.top - 3 : rect.bottom + 3;
 
     updateState({
       loading: true,
@@ -327,7 +342,8 @@ export function RichMentionsProvider<T = object>({
       opened: {
         config,
         fixed,
-        bottom,
+        bottom: overflowY > 0,
+        right: overflowX > 0,
         element: node,
         x,
         y,
@@ -394,10 +410,13 @@ export function RichMentionsProvider<T = object>({
    * @returns {void}
    */
   function setValue(text: string): void {
-    if (ref.current.inputElement) {
-      ref.current.inputElement.innerHTML = getInitialHTML(text);
-      removeBrokenFragments(ref.current.inputElement, configs);
+    const { inputElement, closeAutocomplete } = ref.current;
+
+    if (inputElement) {
+      inputElement.innerHTML = getInitialHTML(text);
+      removeBrokenFragments(inputElement, configs);
     }
+
     closeAutocomplete();
   }
 
