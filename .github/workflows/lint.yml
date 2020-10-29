@@ -34,7 +34,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ matrix.node-version }}-nodemodules2-
 
-      - run: yarn --frozen-lockfile --prefer-offline
+      - run: yarn
         if: |
           steps.cache-yarn-cache.outputs.cache-hit != 'true' ||
           steps.cache-node-modules.outputs.cache-hit != 'true'
