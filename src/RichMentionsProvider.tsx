@@ -148,7 +148,7 @@ export function RichMentionsProvider<T = object>({
     // If there is text selection, delete it.
     // We need to do it manually because of the preventDefault() :'(
     // Update 'text' variable as the content could be updated
-    if (deleteSelection(selection)) {
+    if (deleteSelection(selection, event)) {
       selection = document.getSelection();
       if (!selection || !selection.anchorNode) {
         return;
