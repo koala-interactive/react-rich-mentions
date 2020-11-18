@@ -103,7 +103,8 @@ context('Pending fragment', () => {
       });
 
     cy.get('[data-cy=input]').type('@');
-    cy.get('[data-cy=input]').textEqual('@ f');
+    cy.get('[data-cy=input]').textEqual('@f');
+    cy.get('[data-cy=autocomplete]').should('not.exist', 1);
   });
 
   it('Should be able to autocomplete and reuse already typed "@"', () => {
