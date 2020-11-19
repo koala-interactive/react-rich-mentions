@@ -41,7 +41,10 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
     >
       <div
         className="autocomplete-list"
-        style={{ bottom: opened.bottom ? '0px' : 'auto' }}
+        style={{
+          bottom: opened.bottom ? '0px' : 'auto',
+          right: opened.right ? '0px' : 'auto',
+        }}
       >
         {results.map((item, i) => (
           <button
