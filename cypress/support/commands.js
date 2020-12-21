@@ -37,7 +37,7 @@ Cypress.Commands.add(
 
     expect(
       new RegExp(`^${regexp}$`).test(text),
-      `textEqual("${data}", "${text}")`
+      `textEqual("${text}", "${data}")`
     ).to.be.true;
 
     // whatever we return becomes the new subject

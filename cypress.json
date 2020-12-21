@@ -3,5 +3,6 @@
   "video": false,
   "env": {
     "baseUrl": "http://localhost:1234/"
-  }
+  },
+  "retries": { "runMode": 3, "openMode": 0 }
 }
