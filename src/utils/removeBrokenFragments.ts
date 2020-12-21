@@ -1,5 +1,4 @@
 import { TMentionConfig } from '../RichMentionsContext';
-//import { setCursorPosition } from './setCursorPosition';
 
 export function removeBrokenFragments<T>(
   inputElement: HTMLDivElement,
