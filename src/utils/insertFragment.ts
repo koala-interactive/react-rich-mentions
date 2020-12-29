@@ -108,7 +108,7 @@ export function insertFragment<T>(
           const secondPart = text.substr(offset);
           const subFragment = document.createTextNode(secondPart);
 
-          inputElement.insertBefore(subFragment, node.nextSibling);
+          inputElement.insertBefore(subFragment, fragment.nextSibling);
           node.textContent = firstPart;
           addSpaceBefore = true;
           insertBeforeNode = subFragment;

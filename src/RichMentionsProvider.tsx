@@ -177,7 +177,12 @@ export function RichMentionsProvider<T = object>({
     } = ref.current;
 
     const selection = document.getSelection();
-    const fragment = selection?.anchorNode && getFragment(selection.anchorNode);
+    const fragment =
+      selection?.anchorNode &&
+      (getFragment(selection.anchorNode) ||
+        (selection.anchorOffset === 0 &&
+          selection.anchorNode.previousSibling &&
+          getFragment(selection.anchorNode.previousSibling)));
 
     const shouldOpened =
       fragment &&

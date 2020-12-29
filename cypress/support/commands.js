@@ -33,10 +33,10 @@ Cypress.Commands.add(
     const regexp = data
       .replace(/[-[\]/{}()*+?.\\^$|]/g, '\\$&')
       .replace(/\s/g, '(\\u00a0|\\s)');
-    const text = subject[0].innerText;
+    const text = subject[0].innerText; // Firefox add an empty BR at end
 
     expect(
-      new RegExp(`^${regexp}$`).test(text),
+      new RegExp(`^${regexp}(\s|\n)?$`).test(text),
       `textEqual("${text}", "${data}")`
     ).to.be.true;
 

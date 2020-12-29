@@ -4,14 +4,20 @@ export function removeBrokenFragments<T>(
   inputElement: HTMLDivElement,
   configs: TMentionConfig<T>[]
 ) {
-  Array.from(inputElement.children).forEach(function fixBrokenElement(element) {
+  Array.from(inputElement.children).forEach(function fixBrokenElement(
+    element,
+    index
+  ) {
     const parent = element.parentElement as HTMLElement;
 
     // Replace BR with div>br
     // There is a bug on chrome occuring when the cursor is just after a br, the selection is broken and
     // we can't locate its position. By moving them inside a div it fixes the problem
     if (element instanceof HTMLBRElement) {
-      if (parent.children.length !== 1) {
+      if (
+        parent.children.length !== 1 &&
+        index !== parent.children.length - 1
+      ) {
         const div = document.createElement('div');
         parent.insertBefore(div, element);
         div.appendChild(element);
