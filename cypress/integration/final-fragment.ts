@@ -62,7 +62,7 @@ context('Final fragment', () => {
     cy.get('[data-cy=input]').type('abc');
 
     cy.get('[data-cy=input]').then($el => {
-      expect($el.html()).to.eq('abc');
+      expect($el.html()).to.match(/^abc(<br>)?/);
     });
   });
 });

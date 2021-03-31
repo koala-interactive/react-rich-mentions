@@ -17,6 +17,11 @@ const needSpaceBefore = (
     return !isSpace(text.charAt(offset - 1));
   }
 
+  // Do not add space if the previous element is a block adding a line break
+  if (['DIV', 'BR'].includes(node.nodeName)) {
+    return false;
+  }
+
   if (node.previousSibling) {
     // TODO get first previous element with text
     const prevText = node.previousSibling.textContent || '';
@@ -92,7 +97,7 @@ export function insertFragment<T>(
       // Just remove it and add the insertion just after.
       if (fragment.hasAttribute('data-integrity')) {
         insertBeforeNode = fragment.nextSibling;
-        inputElement.removeChild(fragment);
+        fragment.parentElement?.removeChild(fragment);
       } else {
         const text = node.textContent || '';
 
@@ -103,7 +108,7 @@ export function insertFragment<T>(
           const secondPart = text.substr(offset);
           const subFragment = document.createTextNode(secondPart);
 
-          inputElement.insertBefore(subFragment, node.nextSibling);
+          inputElement.insertBefore(subFragment, fragment.nextSibling);
           node.textContent = firstPart;
           addSpaceBefore = true;
           insertBeforeNode = subFragment;
@@ -121,7 +126,25 @@ export function insertFragment<T>(
       if (offset > 0) {
         insertAfterNode = node;
       } else {
-        insertBeforeNode = node;
+        // If next block is <div><br/></div> we have to replace it to a single <div></div>
+        const element = node as HTMLElement;
+        if (
+          !text &&
+          element.nodeName === 'DIV' &&
+          !element.attributes.length &&
+          element.childNodes.length === 1 &&
+          element.firstElementChild instanceof HTMLBRElement
+        ) {
+          if (element.previousSibling instanceof HTMLDivElement) {
+            insertBeforeNode = node;
+            element.removeChild(element.firstElementChild);
+          } else {
+            insertAfterNode = node;
+            element.removeChild(element.firstElementChild);
+          }
+        } else {
+          insertBeforeNode = node;
+        }
       }
 
       // In this case, we need to add the insertion at the center of a TextNode.
@@ -135,7 +158,7 @@ export function insertFragment<T>(
         text = firstPart;
         node.textContent = firstPart;
 
-        inputElement.insertBefore(
+        node.parentElement?.insertBefore(
           document.createTextNode(secondPart),
           node.nextSibling
         );
@@ -169,9 +192,12 @@ export function insertFragment<T>(
 
   // Insert it at chosen position
   if (insertAfterNode && insertAfterNode !== inputElement) {
-    inputElement.insertBefore(span, insertAfterNode.nextSibling);
+    insertAfterNode.parentElement?.insertBefore(
+      span,
+      insertAfterNode.nextSibling
+    );
   } else if (insertBeforeNode && insertBeforeNode !== inputElement) {
-    inputElement.insertBefore(span, insertBeforeNode);
+    insertBeforeNode.parentElement?.insertBefore(span, insertBeforeNode);
   } else {
     inputElement.appendChild(span);
   }
@@ -179,18 +205,18 @@ export function insertFragment<T>(
   // Insert space before if needed
   if (addSpaceBefore) {
     const space = document.createTextNode('\u00A0');
-    inputElement.insertBefore(space, span);
+    span.parentElement?.insertBefore(space, span);
   }
 
   // Insert space after if needed
   if (addSpaceAfter) {
     const space = document.createTextNode('\u00A0');
-    inputElement.insertBefore(space, span.nextSibling);
+    span.parentElement?.insertBefore(space, span.nextSibling);
   }
 
   // Set cursor position (always true)
   if (span.nextSibling) {
-    setCursorPosition(span.nextSibling, 1);
+    setCursorPosition(span.nextSibling, addSpaceAfter ? 1 : 0);
   }
 
   // If the user is selecting text and some parts of fragment, we need to be sure to delete it correctly

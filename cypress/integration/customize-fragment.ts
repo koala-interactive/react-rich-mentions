@@ -2,8 +2,7 @@
 
 context('config.customizeFragment', () => {
   it('Should handle fragment customization at init', () => {
-    cy.visit(Cypress.env('baseUrl') + '?hello world with <@vince|TOTO>');
-    cy.get('[data-cy=input]').type(' and @koala.');
+    cy.visit(Cypress.env('baseUrl') + '?hello world <@vince|TOTO>');
     cy.get('[data-cy=final]').should('have.class', 'final');
   });
 
