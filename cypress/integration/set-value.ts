@@ -10,7 +10,6 @@ function getHtmlWithAttributesSorted(html: string): string {
 
       while ((matches = regex.exec($2))) {
         attributes.push({ key: matches[1], value: matches[2] || '' });
-        console.log(matches[1], matches[2]);
       }
 
       attributes.sort((a, b) => (a.key > b.key ? 1 : a.key < b.key ? -1 : 0));
