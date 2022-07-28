@@ -3,9 +3,17 @@ import { RichMentionsContext, TMentionItem } from './RichMentionsContext';
 
 interface TProps {
   fixed?: boolean;
+  className: string;
+  selectedItemClassName: string;
+  itemClassName: string;
 }
 
-export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
+export function RichMentionsAutocomplete<T = object>({
+  fixed = true,
+  className,
+  itemClassName,
+  selectedItemClassName,
+}: TProps) {
   const {
     opened,
     index,
@@ -27,12 +35,12 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
 
   useEffect(() => {
     setPositionFixed(fixed);
-  }, [fixed]);
+  }, [fixed, setPositionFixed]);
 
   return opened && results.length ? (
     <div
       {...divAttributes}
-      className="autocomplete"
+      className={`${className}`}
       style={{
         position: fixed ? 'fixed' : 'absolute',
         left: opened.x + 'px',
@@ -48,8 +56,8 @@ export function RichMentionsAutocomplete<T = object>({ fixed = true }: TProps) {
       >
         {results.map((item, i) => (
           <button
-            className={`autocomplete-item ${
-              i === index ? 'autocomplete-item-selected' : ''
+            className={`${itemClassName} ${
+              i === index ? selectedItemClassName : ''
             }`}
             type="button"
             key={item.ref}

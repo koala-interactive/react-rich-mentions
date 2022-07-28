@@ -55,10 +55,8 @@
     "@types/react-dom": "^16.9.8",
     "cypress": "^5.0.0",
     "husky": "^4.2.5",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
     "tsdx": "^0.14.0",
     "tslib": "^2.0.1",
-    "typescript": "^4.0.2"
+    "typescript": "^4.7.4"
   }
 }

@@ -3,9 +3,14 @@ import { RichMentionsContext } from './RichMentionsContext';
 
 interface TProps extends HTMLProps<HTMLDivElement> {
   defaultValue?: string;
+  singleLine: Boolean;
 }
 
-export function RichMentionsInput({ defaultValue, ...divAttributes }: TProps) {
+export function RichMentionsInput({
+  defaultValue,
+  singleLine,
+  ...divAttributes
+}: TProps) {
   const ref = useRef<string | null>(null);
   const {
     setInputElement,
@@ -25,6 +30,11 @@ export function RichMentionsInput({ defaultValue, ...divAttributes }: TProps) {
   }
 
   const mergeOnKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      if (singleLine) {
+        event.preventDefault();
+      }
+    }
     onKeyDown(event);
 
     if (divAttributes.onKeyDown) {
@@ -47,6 +57,12 @@ export function RichMentionsInput({ defaultValue, ...divAttributes }: TProps) {
     }
   };
 
+  let style = {
+    outline: 0,
+  };
+  if (singleLine) {
+    style = { ...style, ...{ whiteSpace: 'nowrap', overflow: 'hidden' } };
+  }
   return (
     <div
       ref={setInputElement}
@@ -56,6 +72,7 @@ export function RichMentionsInput({ defaultValue, ...divAttributes }: TProps) {
       onKeyDown={mergeOnKeyDown}
       onInput={onInput}
       dangerouslySetInnerHTML={{ __html: ref.current || '' }}
+      style={style}
     ></div>
   );
 }

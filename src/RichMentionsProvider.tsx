@@ -75,7 +75,7 @@ export function RichMentionsProvider<T = object>({
     return () => {
       document.removeEventListener('selectionchange', onSelectionChange, false);
     };
-  }, []);
+  });
 
   // Expose reference with new context
   useEffect(() => {
@@ -299,6 +299,28 @@ export function RichMentionsProvider<T = object>({
     });
   }
 
+  /*
+  function getCaretCoordinates() {
+    let x = 0,
+      y = 0;
+    const isSupported = typeof window.getSelection !== "undefined";
+    if (isSupported) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount !== 0) {
+        const range = selection.getRangeAt(0).cloneRange();
+        range.collapse(true);
+        const rect = range.getClientRects()[0];
+        if (rect) {
+          x = rect.left;
+          y = rect.top;
+        }
+      }
+    }
+    return { x, y };
+  }
+
+  */
+
   /**
    * Public method to open the autocomplete
    *
@@ -312,11 +334,20 @@ export function RichMentionsProvider<T = object>({
     text: string,
     config: TMentionConfig<T>
   ): void {
-    const fixed = ref.current.fixed;
-    const rect = { top: 0, right: 0, bottom: 0, left: 0 };
-    const nodeRect = node.getBoundingClientRect();
+    //const fixed = ref.current.fixed;
+    //const rect = { top: 0, right: 0, bottom: 0, left: 0 };
+    let nodeRect = node.getBoundingClientRect();
+    let parentRect = { top: 0, right: 0, bottom: 0, left: 0 }; //node.getBoundingClientRect();
+    //const rects = node.getClientRects();
 
-    rect.top = nodeRect.top;
+    if (ref.current.inputElement) {
+      parentRect = ref.current.inputElement.getBoundingClientRect();
+    }
+
+    //const caretPos = getCaretCoordinates();
+    const x = nodeRect.right - parentRect.left;
+    const y = nodeRect.bottom - parentRect.top;
+    /*rect.top = nodeRect.top;
     rect.right = nodeRect.right;
     rect.bottom = nodeRect.bottom;
     rect.left = nodeRect.left;
@@ -338,17 +369,18 @@ export function RichMentionsProvider<T = object>({
     const overflowX = nodeRect.left + 10 + ELEMENT_WIDTH - window.innerWidth;
     const overflowY = nodeRect.bottom + ELEMENT_HEIGHT - window.innerHeight;
 
-    const x = overflowX > 0 ? rect.right + 15 : rect.left - 3;
-    const y = overflowY > 0 ? rect.top - 3 : rect.bottom + 3;
+    const x = 200; //overflowX > 0 ? rect.right + 15 : rect.left - 3;
+    const y = 10;//overflowY > 0 ? rect.top - 3 : rect.bottom + 3;
+    */
 
     updateState({
       loading: true,
       index: 0,
       opened: {
         config,
-        fixed,
-        bottom: overflowY > 0,
-        right: overflowX > 0,
+        fixed: true,
+        bottom: true,
+        right: true,
         element: node,
         x,
         y,
