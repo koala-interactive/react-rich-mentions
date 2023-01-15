@@ -24,6 +24,7 @@ export function handleFragmentEscape(
 
     if (!isValid) {
       event.preventDefault();
+      if (insertion == null) {return;}
       escapeFragmentWithValue(element, insertion);
     }
   }

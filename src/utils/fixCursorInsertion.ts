@@ -52,6 +52,7 @@ export function fixCursorInsertion(
 
       // At first position of fragment, move before it
       if (range.endOffset === 0) {
+        if (insertion == null) {return;}
         escapeFragmentWithValue(element, insertion, 'before');
         event.preventDefault();
         continue;
@@ -62,6 +63,7 @@ export function fixCursorInsertion(
 
       // Move outside final fragment
       if (isFinal && range.startOffset === text.length) {
+        if (insertion == null) {return;}
         escapeFragmentWithValue(element, insertion, 'after');
         event.preventDefault();
         continue;
