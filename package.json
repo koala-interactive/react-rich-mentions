@@ -60,5 +60,8 @@
     "tsdx": "^0.14.0",
     "tslib": "^2.0.1",
     "typescript": "^4.0.2"
+  },
+  "dependencies": {
+    "react-app-polyfill": "^1.0.0"
   }
 }
