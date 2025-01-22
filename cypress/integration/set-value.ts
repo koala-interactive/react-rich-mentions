@@ -3,6 +3,7 @@
 function getHtmlWithAttributesSorted(html: string): string {
   return html
     .replace(/\/?unicorn\.\w+\./, 'unicorn.')
+    .replace(/(?:http:\/\/[^/]+\/[^/]+\/dist)?unicorn\.png/, 'unicorn.png')
     .replace(/<(\w+)([^>]+)>/g, ($0, $1, $2) => {
       const regex = /([a-zA-Z0-9_-]+)="([^"]+)?"/g;
       const attributes = [];
