@@ -14,6 +14,7 @@ export function getTransformedValue(
     .map(el => getNodeContent(el, brCharacter))
     .join('')
     .replace(/\u00A0/g, ' ') // Replace back insecable spaces
+    .replace(/\n{2,}/g, '\n')
     .replace(brMatcher, '\n') // Replace <br/> to line break
     .trim();
 }
