@@ -23,7 +23,7 @@ context('Proper cursor behavior', () => {
     cy.get('[data-cy=input]').type('e');
 
     cy.get('[data-cy=parse]').click();
-    cy.get('[data-cy=result]').should('have.text', 'a\nb :unicorn: e\nc');
+    cy.get('[data-cy=result]').should('have.text', 'a\nb :unicorn: e\n\nc');
   });
 
   it('Should be able to insert fragment inside a line break', () => {
@@ -36,7 +36,7 @@ context('Proper cursor behavior', () => {
     cy.get('[data-cy=parse]').click();
     cy.get('[data-cy=result]').should(
       'have.text',
-      'a\n:unicorn: e :unicorn: \nc'
+      'a\n\n:unicorn: e :unicorn: \nc'
     );
   });
 
@@ -51,7 +51,7 @@ context('Proper cursor behavior', () => {
     cy.get('[data-cy=parse]').click();
     cy.get('[data-cy=result]').should(
       'have.text',
-      'a\n:unicorn: \n:unicorn: :unicorn: \nc'
+      'a\n\n:unicorn: \n\n\n:unicorn: :unicorn: \nc'
     );
   });
 });

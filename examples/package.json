@@ -1,14 +1,16 @@
 {
   "name": "example",
   "version": "1.0.0",
-  "main": "base.js",
+  "default": "index.html",
   "license": "MIT",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html --public-url ./"
+    "build": "npx cypress install && parcel build index.html --public-url ./"
   },
   "dependencies": {
-    "react-app-polyfill": "^1.0.0"
+    "react-app-polyfill": "^1.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "alias": {
     "react": "../node_modules/react",
